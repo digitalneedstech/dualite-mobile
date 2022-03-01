@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 class SwitchVideoPlayer extends StatefulWidget {
   VideoModel videoModel;
-  SwitchVideoPlayer({this.videoModel});
+  SwitchVideoPlayer({required this.videoModel});
   SwitchVideoPlayerState createState()=>SwitchVideoPlayerState();
 }
 
@@ -17,7 +17,7 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
   bool foryou = true;
   bool play = true;
   bool _isLoading=true;
-  VideoPlayerController _videoPlayerController1,_videoPlayerController2;
+  late VideoPlayerController _videoPlayerController1,_videoPlayerController2;
   int activeVideoControllerModel=0;
   String videosErrorMessage="";
   VideoControllerModel videoControllerModel=new VideoControllerModel(active: 1);
@@ -49,7 +49,7 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
         videosErrorMessage = "First Video is either not available or blank.";
       }
       else{
-        _videoPlayerController2 = widget.videoModel.contentTwo == null ?
+        _videoPlayerController2 = widget.videoModel.contentTwo == "" ?
         VideoPlayerController.asset("assets/vod.mp4") :
         VideoPlayerController.network(widget.videoModel.contentTwo,
             videoPlayerOptions: VideoPlayerOptions(
@@ -58,8 +58,7 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
 
 
         _videoPlayerController2.initialize().then((value) {
-          if (_videoPlayerController1.value.duration == null &&
-              _videoPlayerController1.value.duration == Duration(
+          if (_videoPlayerController1.value.duration == Duration(
                   seconds: 0
               )) {
             _isLoading = false;
@@ -101,13 +100,8 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
     super.dispose();
   }
   bool isPaused=false;
-  Widget iconWidget;
-
   @override
   Widget build(BuildContext context){
-    iconWidget=IconButton(icon: Icon(Icons.pause), onPressed: (){
-      _videoPlayerController1.pause();
-    },color: Colors.white,);
     return SafeArea(
       top: true,
       child: Scaffold(

@@ -16,14 +16,14 @@ class Recommendations extends StatelessWidget{
         return LoadingOverlay(
           isLoading: recommendationController.isLoading ? true:false,
           isFormSaveOverlay: false,
-          child: recommendationController.errorMessage!=null ? Center(child: Text(
+          child: recommendationController.errorMessage!="" ? Center(child: Text(
             recommendationController.errorMessage
           ),):ListView.builder(
             itemBuilder: (context, int index) {
-              VideoModel videoModel=recommendationController.videosList[index];
+              VideoModel? videoModel=recommendationController.videosList[index];
               return Column(
                 children: [
-                  videoModel.thumbnail==null ? Container(
+                  videoModel!.thumbnail=="" ? Container(
               height: MediaQuery.of(context).size.height * 0.25,
               decoration: BoxDecoration(
               image: DecorationImage(

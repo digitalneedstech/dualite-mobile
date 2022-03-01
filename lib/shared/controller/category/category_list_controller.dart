@@ -3,7 +3,7 @@ import 'package:dualites/shared/controller/category/category_list_provider.dart'
 import 'package:get/get.dart';
 
 class CategoryListController extends GetxController {
-  List<CategoryModel> categoryList = [];
+  List<CategoryModel?> categoryList = [];
   bool isLoading = true;
 
   @override

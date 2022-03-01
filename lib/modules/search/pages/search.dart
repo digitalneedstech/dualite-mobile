@@ -76,14 +76,14 @@ class SearchPage extends StatelessWidget {
                                 );
                               }
                               if(videoListController.selectedSearchCategory=="CREATOR" && controller.searchProfiles.isNotEmpty){
-                                UserProfileModel userProfileModel=controller.searchProfiles[index];
+                                UserProfileModel? userProfileModel=controller.searchProfiles[index];
                                 return AnimateList(index: index,
-                                widget: UserProfileTile(userProfileModel));
+                                widget: UserProfileTile(userProfileModel!));
                               }
                               else{
-                                VideoModel videoModel =controller.searchVideos[index];
+                                VideoModel? videoModel =controller.searchVideos[index];
                                 return AnimateList(index: index,
-                                    widget: VideoTile(videoModel));
+                                    widget: VideoTile(videoModel!));
                               }
                             },
                             itemCount: controller.searchVideos.isNotEmpty ?controller.searchVideos.length:controller.searchProfiles.length,
@@ -103,8 +103,8 @@ class SearchPage extends StatelessWidget {
 }
 
 class SearchTextField extends StatefulWidget {
-  Function callback;
-  Function changeCallback;
+  Function? callback;
+  Function? changeCallback;
 
   SearchTextField({this.callback, this.changeCallback});
 
@@ -123,12 +123,12 @@ class SearchTextFieldState extends State<SearchTextField> {
           setState(() {
             initialVal = val;
             if (widget.changeCallback != null)
-              widget.changeCallback(initialVal);
+              widget.changeCallback!(initialVal);
           });
         },
         decoration: InputDecoration(
             suffix: IconButton(
-          onPressed: () => widget.callback(initialVal),
+          onPressed: () => widget.callback!(initialVal)!,
           icon: Icon(Icons.search),
         )),
       );
@@ -139,7 +139,7 @@ class SearchTextFieldState extends State<SearchTextField> {
           setState(() {
             initialVal = val;
             if (widget.changeCallback != null)
-              widget.changeCallback(initialVal);
+              widget.changeCallback!(initialVal);
           });
         });
   }

@@ -4,7 +4,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 class AnimateList extends StatelessWidget{
   final Widget widget;
   final int index;
-  AnimateList({this.widget,this.index});
+  AnimateList({required this.widget,required this.index});
   @override
   Widget build(BuildContext context) {
     return AnimationConfiguration.staggeredList(

@@ -12,7 +12,7 @@ class ReelsInfoLoading extends ReelsLoadState {}
 class ReelsInfoLoaded extends ReelsLoadState {
   final VideoModel videoInfo;
 
-  ReelsInfoLoaded({@required this.videoInfo});
+  ReelsInfoLoaded({required this.videoInfo});
 
   @override
   List<Object> get props => [];
@@ -22,7 +22,7 @@ class ReelsInfoLoaded extends ReelsLoadState {
 class ReelsLoaded extends ReelsLoadState {
   final bool isReelsLoaded;
 
-  ReelsLoaded({@required this.isReelsLoaded});
+  ReelsLoaded({required this.isReelsLoaded});
 
   @override
   List<Object> get props => [];
@@ -31,7 +31,7 @@ class ReelsLoaded extends ReelsLoadState {
 
 class ReelLikedState extends ReelsLoadState {
   bool isLiked;
-  ReelLikedState({this.isLiked});
+  ReelLikedState({required this.isLiked});
   @override
   List<Object> get props => [];
 }
@@ -39,7 +39,7 @@ class ReelLikedState extends ReelsLoadState {
 class ReelInfoLoadingError extends ReelsLoadState {
   final String error;
 
-  ReelInfoLoadingError({@required this.error});
+  ReelInfoLoadingError({required this.error});
 
   @override
   List<Object> get props => [error];

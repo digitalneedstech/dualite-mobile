@@ -9,31 +9,31 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthenticationService {
   Dio dio;
   AuthenticationService(this.dio);
-  Future<Map> registerWithEmailAndPassword(String url, User user) async {
+  Future<Map<String,List<dynamic>>> registerWithEmailAndPassword(String url, User user) async {
     Map<String, List<dynamic>> values = {};
     try {
       Response response = await dio.post(url, data: user.toJsonForRegister());
       values["isRegistered"] = [response.data["key"]];
       return values;
     } on DioError catch (e) {
-      values = Map.from(e.response.data);
+      values = Map.from(e.response!.data);
       return values;
     }
   }
 
-  Future<Map> loginWithEmailAndPassword(String url, User user) async {
+  Future<Map<String,String>> loginWithEmailAndPassword(String url, User user) async {
     Map<String, String> values = {};
     try {
       Response response = await dio.post(url, data: user.toJsonForLogin());
       values["key"] = response.data["key"];
       return values;
     } on DioError catch (e) {
-      values["error"] = List.from(e.response.data["non_field_errors"])[0];
+      values["error"] = List.from(e.response!.data["non_field_errors"])[0];
       return values;
     }
   }
 
-  Future<Map> loginWithGmail(
+  Future<Map<String, String>> loginWithGmail(
       String url, String accessToken, String idToken, String code) async {
     Map<String, String> values = {};
     try {
@@ -42,7 +42,7 @@ class AuthenticationService {
       values["key"] = response.data["key"];
       return values;
     } on DioError catch (e) {
-      values["error"] = List.from(e.response.data["non_field_errors"])[0];
+      values["error"] = List.from(e.response!.data["non_field_errors"])[0];
       return values;
     }
   }
@@ -58,8 +58,8 @@ class AuthenticationService {
       );
       return UserProfileModel.fromMap(response.data);
     } on DioError catch (e) {
-      if (Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if (Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }
@@ -77,8 +77,8 @@ class AuthenticationService {
       );
       return UserProfileModel.fromMap(response.data);
     } on DioError catch (e) {
-      if (Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if (Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }
@@ -99,10 +99,10 @@ class AuthenticationService {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     if (preferences.containsKey("user")) {
       UserProfileModel userProfileModel =
-          jsonDecode(preferences.getString("user"));
+          jsonDecode(preferences.getString("user")!);
       return userProfileModel;
     }
-    return null;
+    return new UserProfileModel(id: 0);
   }
 }
 

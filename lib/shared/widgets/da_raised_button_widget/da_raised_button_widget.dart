@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DaRaisedButtonWidget extends StatelessWidget{
-  final VoidCallback callback;
+  final VoidCallback? callback;
   final Color textColor,buttonColor;
   final String buttonText;
   final String disabledButtontext;

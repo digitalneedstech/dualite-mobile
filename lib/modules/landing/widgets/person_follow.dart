@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 
 class PersonFollowWidget extends StatelessWidget{
   final UserProfileModel userProfileModel;
-  PersonFollowWidget({this.userProfileModel});
+  PersonFollowWidget({required this.userProfileModel});
   final LoginController loginController=Get.put(LoginController());
   final AuthenticationController authenticationController=Get.find();
   @override

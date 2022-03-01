@@ -3,13 +3,11 @@ import 'package:dualites/modules/home/widgets/models/video_model.dart';
 import 'package:dualites/modules/upload/getx/gallery_provider.dart';
 import 'package:dualites/modules/upload/getx/gallery_state.dart';
 import 'package:dualites/modules/upload/pages/videos_post/videos_post.dart';
-import 'package:dualites/modules/widgets/widgets.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:share/share.dart';
-import 'package:video_editor/utils/controller.dart';
+import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryController extends GetxController {
@@ -17,16 +15,16 @@ class GalleryController extends GetxController {
   List<AssetEntity> selectedAssets = [];
   Map<int, File> resizedFiles = {};
   RxBool isNextButtonEnabled=false.obs;
-  VideoEditorController controller1;
-  VideoEditorController controller2;
+  late VideoEditorController controller1;
+  late VideoEditorController controller2;
   RxInt videoLength1=0.obs;
   RxInt videoLength2=0.obs;
   Rx<File> selectedAssetEntity = File("").obs;
-  String errorMessage;
+  String errorMessage="";
   bool isLoading = true;
   GalleryProvider galleryProvider;
 
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   VideoPlayerController get controller => _controller;
 
@@ -46,7 +44,7 @@ class GalleryController extends GetxController {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   Future<String> createDeepLink(int videoId) async {
-    _postVideoStream.value = VideoDeepLinkCreationErrorState();
+    _postVideoStream.value = VideoDeepLinkCreationErrorState(message: '');
     final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: 'https://dualite.page.link',
         link: Uri.parse('https://dualite.page.link/video?id=$videoId'),
@@ -63,12 +61,10 @@ class GalleryController extends GetxController {
           title: 'Enroll As An Affiliate',
           description: 'And Earn cash',
         ),
-        dynamicLinkParametersOptions: DynamicLinkParametersOptions(
-            shortDynamicLinkPathLength: ShortDynamicLinkPathLength.unguessable),
         navigationInfoParameters:
         NavigationInfoParameters(forcedRedirectEnabled: false));
-
-    final ShortDynamicLink dynamicUrl = await parameters.buildShortLink();
+    final ShortDynamicLink dynamicUrl =
+    await parameters.buildShortLink();
     return dynamicUrl.shortUrl.toString();
     /*_postVideoStream.value =
         VideoDeepLinkCreationSuccessState(deepLinkUrl: dynamicUrl.toString());
@@ -82,7 +78,8 @@ class GalleryController extends GetxController {
     galleryAssets = await galleryProvider.loadGalleryAssets();
     if (galleryAssets.isNotEmpty) {
       galleryAssets.first.file.then((value) {
-        selectedAssetEntity.value = value;
+        if(value!=null)
+          selectedAssetEntity.value = value;
       });
     } else {
       errorMessage = "No Videos Found";
@@ -94,7 +91,8 @@ class GalleryController extends GetxController {
 
   updateSelectedAssetEntity(AssetEntity assetEntity) {
     assetEntity.file.then((value) {
-      selectedAssetEntity.value = value;
+      if(value!=null)
+        selectedAssetEntity.value = value;
     });
   }
 
@@ -136,7 +134,7 @@ class GalleryController extends GetxController {
 
   postVideoContent(File thumbnailImage, String tags,
       BuildContext context) async {
-    if (formKey.currentState.validate()) {
+    if (formKey.currentState!.validate()) {
       _postVideoStream.value = PostVideoLoadingState();
       Get.snackbar("Saving..", "Please wait.",
           snackPosition: SnackPosition.BOTTOM,
@@ -147,19 +145,24 @@ class GalleryController extends GetxController {
         files = resizedFiles.values.toList();
       } else {
         for (AssetEntity entity in selectedAssets) {
-          File file = await entity.file;
-          files.add(file);
+          File? file = await entity.file;
+          if(file!=null)
+            files.add(file);
         }
         Map<bool, String> mediaId = await galleryProvider.postThumbnailFile(
             "https://dualite.xyz/api/v1/uploads/", thumbnailImage);
-        if (mediaId.containsKey(true)) {
-          dynamic response = await galleryProvider.postVideoContent(
-              "https://dualite.xyz/api/v1/videos/",
-              titleController.text,
-              descriptionController.text,
-              typeController.text,
-              tags,
-              mediaId[true]);
+        if (mediaId[true]!=null) {
+          String? message=mediaId[true];
+          dynamic response;
+          if(message!=null) {
+             response= await galleryProvider.postVideoContent(
+                "https://dualite.xyz/api/v1/videos/",
+                titleController.text,
+                descriptionController.text,
+                typeController.text,
+                tags,
+                message);
+          }
           if (response is VideoModel) {
             String firstUrl = (response as VideoModel).contentOne;
             String secondUrl = (response as VideoModel).contentTwo;
@@ -198,7 +201,9 @@ class GalleryController extends GetxController {
                       OutlineButton(onPressed: () => Navigator.pop(context),
                         child: Center(child: Text("Cancel"),),),
                       RaisedButton(onPressed: () {
-                        Share.share(deepLink);
+                        /*
+                        TODO-
+                        Share.share(deepLink);*/
                       }, child: Center(child: Text("Share"),),)
                     ]
                 );
@@ -210,9 +215,13 @@ class GalleryController extends GetxController {
             _postVideoStream.value = PostVideoErrorState(message: response);
           }
         } else {
-          Get.snackbar("Error", (mediaId[false]),
-              backgroundColor: Colors.red, colorText: Colors.white);
-          _postVideoStream.value = PostVideoErrorState(message: mediaId[false]);
+          String? message = mediaId[false];
+          if (message != null) {
+            Get.snackbar("Error", (message),
+                backgroundColor: Colors.red, colorText: Colors.white);
+            _postVideoStream.value =
+                PostVideoErrorState(message:message);
+          }
         }
       }
     }

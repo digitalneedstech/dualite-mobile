@@ -29,7 +29,7 @@ class VideosList extends StatelessWidget {
             ],
           ),);
         }
-        List<VideoModel> videos =
+        List<VideoModel?> videos =
             videoListController.usersVideos;
         if (videos.isEmpty) {
           return Center(child: Column(
@@ -50,7 +50,7 @@ class VideosList extends StatelessWidget {
                   return ConfirmWidget(
                     callBack: () {
                       videoListController.deleteVideoById(
-                          videos[index].id, context);
+                          videos[index]!.id, context);
                     },
                   );
                 });
@@ -62,7 +62,7 @@ class VideosList extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              LandingPage(id: videos[index].id)));
+                              LandingPage(id: videos[index]!.id)));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -90,11 +90,11 @@ class VideosList extends StatelessWidget {
                                     offset: Offset(5.0, 5.0),
                                     blurRadius: 10.0)
                               ],
-                              image: DecorationImage(
+                              image:videos[index]!.thumbnail==""?DecorationImage(image: AssetImage("assets/images/profile_video.jpg"),
+                              fit: BoxFit.cover): DecorationImage(
                                   fit: BoxFit.cover,
-                                  image:videos[index].thumbnail!=null && videos[index].thumbnail!=""
-                                  ? NetworkImage(videos[index].thumbnail):
-                                  AssetImage("assets/images/profile_video.jpg"))),
+                                  image:NetworkImage(videos[index]!.thumbnail.toString())
+                                  )),
                         ),
                       ),
                     ),
@@ -104,7 +104,7 @@ class VideosList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            videos[index].title,
+                            videos[index]!.title,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 18.0),
                           ),
@@ -113,7 +113,7 @@ class VideosList extends StatelessWidget {
                             style: TextStyle(color: Colors.grey),
                           ),
                           Text(
-                            "Views Count : ${videos[index].views}",
+                            "Views Count : ${videos[index]!.views}",
                             style: TextStyle(color: Colors.grey),
                           )
                         ],

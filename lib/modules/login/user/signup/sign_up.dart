@@ -70,7 +70,7 @@ class UserSignUpPageState extends State<UserSignUpPage> {
                             borderSide: BorderSide(color: Colors.white),
                           ),
                         ),
-                        validator: (val)=>val.trim()==""?"Please Enter Email":null,
+                        validator: (val)=>val!.trim()==""?"Please Enter Email":null,
                       ),
                       SizedBox(
                         height: 10.0,
@@ -88,7 +88,7 @@ class UserSignUpPageState extends State<UserSignUpPage> {
                           ),
                         ),
                           validator: (val){
-                            if(val.trim()=="")
+                            if(val!.trim()=="")
                               return "Please Enter Password";
                             else if(_confirmPasswordController.text!=_passwordController.text)
                               return "Password and confirm password Should be same";
@@ -111,7 +111,7 @@ class UserSignUpPageState extends State<UserSignUpPage> {
                           ),
                         ),
                         validator: (val){
-                          if(val.trim()=="")
+                          if(val!.trim()=="")
                             return "Please Enter Confirm Password";
                           else if(_confirmPasswordController.text!=_passwordController.text)
                             return "Password and confirm password Should be same";
@@ -127,7 +127,7 @@ class UserSignUpPageState extends State<UserSignUpPage> {
                           RaisedButton(
                             onPressed: controller.state is RegisterLoading ?null :() {
                               //Navigator.pushNamed(context, Routes.USER_WELCOME_NEXT);
-                              if (_key.currentState.validate()) {
+                              if (_key.currentState!.validate()) {
                                 if(_userNameController.text.trim()=="")
                                   _userNameController.text=_emailController.text;
                                 controller.register(

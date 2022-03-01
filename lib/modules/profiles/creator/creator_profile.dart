@@ -28,16 +28,21 @@ class CreatorProfilePage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 child: Stack(
                   children: [
+                    authenticationController.userProfileModel.avatar==""?
                     Container(
                       height: MediaQuery.of(context).size.height * 0.4,
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               fit: BoxFit.cover,
-                              image: authenticationController
-                                          .userProfileModel.avatar ==
-                                      null
-                                  ? AssetImage("assets/images/author_image.jpg")
-                                  : NetworkImage(authenticationController
+                              image: AssetImage("assets/images/author_image.jpg")
+                                  )),
+                    ):
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.4,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(authenticationController
                                       .userProfileModel.avatar))),
                     ),
                     Positioned(
@@ -136,7 +141,7 @@ class CreatorProfilePage extends StatelessWidget {
                                 ),
                                 InkWell(
                                   onTap: ()async{
-                                    authenticationController.userProfileModel=null;
+                                    authenticationController.userProfileModel=UserProfileModel(id: 0);
                                     SharedPreferences preferences=await SharedPreferences.getInstance();
                                     preferences.remove("key");
                                     Navigator.pushReplacement(

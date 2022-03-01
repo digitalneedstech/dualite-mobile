@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:dualites/models/user_profile_model.dart';
 import 'package:dualites/modules/home/widgets/models/user_profiles_list.dart';
 import 'package:dualites/modules/home/widgets/models/video_list.dart';
 import 'package:dualites/modules/home/widgets/models/video_model.dart';
@@ -7,16 +6,16 @@ import 'package:dualites/shared/library/api_request.dart';
 
 class VideoListProvider {
   Dio dio;
-  VideoListProvider({this.dio});
+  VideoListProvider({required this.dio});
   void getVideosList(String url,{
-    Function() beforeSend,
-    Function(VideosList videosList) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(VideosList videosList)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
-    ApiRequest(url: url, data: null).get(
+    ApiRequest(url: url,  authKey: '').get(
       beforeSend: () => {if (beforeSend != null) beforeSend()},
       onSuccess: (data) {
-        onSuccess(VideosList.fromMap(Map.from(data)));
+        onSuccess!(VideosList.fromMap(Map.from(data)));
       },
       onError: (error) => {if (onError != null) onError(error)},
     );
@@ -34,36 +33,36 @@ class VideoListProvider {
       );
       return VideosList.fromMap(Map.from(response.data));
     } on DioError catch (e) {
-      if(Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if(Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }
   }
 
   void getVideosListFromSearchQuery(String url,String title,{
-    Function() beforeSend,
-    Function(VideosList videosList) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(VideosList videosList)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
-    ApiRequest(url: url+title, data: null).get(
+    ApiRequest(url: url+title,  authKey: '').get(
       beforeSend: () => {if (beforeSend != null) beforeSend()},
       onSuccess: (data) {
-        onSuccess(VideosList.fromMap(Map.from(data)));
+        onSuccess!(VideosList.fromMap(Map.from(data)));
       },
       onError: (error) => {if (onError != null) onError(error)},
     );
   }
 
   void getProfilesListFromSearchQuery(String url,String title,{
-    Function() beforeSend,
-    Function(UserProfilesList videosList) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(UserProfilesList videosList)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
-    ApiRequest(url: url+title, data: null).get(
+    ApiRequest(url: url+title, authKey: '').get(
       beforeSend: () => {if (beforeSend != null) beforeSend()},
       onSuccess: (data) {
-        onSuccess(UserProfilesList.fromMap(Map.from(data)));
+        onSuccess!(UserProfilesList.fromMap(Map.from(data)));
       },
       onError: (error) => {if (onError != null) onError(error)},
     );
@@ -77,8 +76,8 @@ class VideoListProvider {
       );
       return VideoModel.fromMap(response.data);
     } on DioError catch (e) {
-      if(Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if(Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }
@@ -98,8 +97,8 @@ class VideoListProvider {
         return true;
       return false;
     } on DioError catch (e) {
-      if(Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if(Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }

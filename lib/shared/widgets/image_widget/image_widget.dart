@@ -1,14 +1,13 @@
-import 'package:dualites/shared/widgets/da_raised_button_widget/da_raised_button_widget.dart';
 import 'package:dualites/shared/widgets/media_select_widget/media_select_widget.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadWidget extends StatefulWidget {
-  Function callback;
+  Function? callback;
   int numOfImages;
   File file;
-  ImageUploadWidget({this.file,this.numOfImages = 1, this.callback});
+  ImageUploadWidget({required this.file,this.numOfImages = 1, this.callback});
   ImageUploadWidgetState createState() => ImageUploadWidgetState();
 }
 
@@ -24,7 +23,7 @@ class ImageUploadWidgetState extends State<ImageUploadWidget> {
       ),
       child: Center(
         child: ImagesWidget2(image: widget.file,callback: (File file) {
-          widget.callback(file);
+          widget.callback!(file);
         }),
       ),
     );
@@ -32,11 +31,10 @@ class ImageUploadWidgetState extends State<ImageUploadWidget> {
 }
 
 class ImagesWidget2 extends StatelessWidget {
-  Function callback;
-  final File image;
+  Function? callback;
+  final File? image;
   final String title;
   ImagesWidget2({this.image,this.callback, this.title = "Upload/Change Pic"});
-  File imageFiles;
   Widget build(BuildContext context) {
     return
         Container(
@@ -55,7 +53,7 @@ class ImagesWidget2 extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16.0),
                     color: Colors.grey.shade200),
                 child: image!=null ?Center(
-                  child: Image.file(image,width: MediaQuery.of(context).size.width*0.8,height:150),
+                  child: Image.file(image!,width: MediaQuery.of(context).size.width*0.8,height:150),
                 ):Center(
                   child: IconButton(
                       icon:
@@ -78,18 +76,17 @@ class ImagesWidget2 extends StatelessWidget {
         });
     var response = await pickImageFromGallery(
         selectedMediaVal ? ImageSource.gallery : ImageSource.camera);
-    if (response is File) {
-      imageFiles = response;
-      callback(new File(imageFiles.path));
+    if (response is XFile) {
+      callback!(new File(response.path));
     }
   }
 
   Future<dynamic> pickImageFromGallery(ImageSource source,
       {bool isImage = true}) async {
-    File filesFetched;
+    XFile? filesFetched;
     if (isImage)
       filesFetched =
-          await ImagePicker.pickImage(source: source, imageQuality: 30);
+          await ImagePicker.platform.getImage(source: source, imageQuality: 30);
     if (filesFetched == null)
       return Future.value("");
     else

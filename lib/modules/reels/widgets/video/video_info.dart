@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoInfo extends StatefulWidget {
-  VideoControllerModel videoControllerModel;
   VideoPlayerController videoPlayerController;
-  final Function callback;
-  final Function longPressCallback;
-  VideoInfo({this.videoControllerModel,this.longPressCallback,this.videoPlayerController,this.callback});
+  final Function? callback;
+  final Function? longPressCallback;
+  VideoInfo({
+    this.longPressCallback,required this.videoPlayerController,this.callback});
   VideoInfoState createState()=>VideoInfoState();
 }
 class VideoInfoState extends State<VideoInfo>{
@@ -18,11 +18,11 @@ class VideoInfoState extends State<VideoInfo>{
           padding: EdgeInsets.all(0),
           onLongPress: (){
             if(widget.longPressCallback!=null)
-              widget.longPressCallback();
+              widget.longPressCallback!();
           },
           onPressed: () {
             if (widget.callback != null) {
-              widget.callback();
+              widget.callback!();
             }
           }, child: Container(
         width: MediaQuery

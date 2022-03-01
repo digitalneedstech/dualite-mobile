@@ -17,7 +17,7 @@ class UnAuthenticated extends AuthenticationState {}
 class Authenticated extends AuthenticationState {
   final UserProfileModel user;
 
-  Authenticated({@required this.user});
+  Authenticated({required this.user});
 
   @override
   List<Object> get props => [user];
@@ -25,7 +25,7 @@ class Authenticated extends AuthenticationState {
 
 class Registered extends AuthenticationState {
   final bool isRegistered;
-  Registered({this.isRegistered});
+  Registered({required this.isRegistered});
 
   @override
   List<Object> get props => [];
@@ -34,7 +34,7 @@ class Registered extends AuthenticationState {
 class AuthenticationFailure extends AuthenticationState {
   final String message;
 
-  AuthenticationFailure({@required this.message});
+  AuthenticationFailure({required this.message});
 
   @override
   List<Object> get props => [message];

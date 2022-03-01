@@ -4,12 +4,9 @@ import 'package:flutter/foundation.dart';
 class ApiRequest {
   final String url;
   final String authKey;
-  final Map data;
-
   ApiRequest({
-    @required this.url,
-    @required this.authKey,
-    this.data,
+    required this.url,
+    required this.authKey
   });
 
   Dio _dio() {
@@ -20,21 +17,21 @@ class ApiRequest {
   }
 
   void get({
-    Function() beforeSend,
-    Function(dynamic data) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(dynamic data)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
     if(beforeSend!=null)
       beforeSend();
-    if(authKey==null){
-      _dio().get(this.url, queryParameters: this.data).then((res) {
+    if(authKey=="" ){
+      _dio().get(this.url).then((res) {
         if (onSuccess != null) onSuccess(res.data);
       }).catchError((error) {
         if (onError != null) onError(error);
       });
     }
     else {
-      _dio().get(this.url, queryParameters: this.data, options: Options(
+      _dio().get(this.url, options: Options(
         headers: {
           "Authorization": "Token ${authKey}", // set content-length
         },

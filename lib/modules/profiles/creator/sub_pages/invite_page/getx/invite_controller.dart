@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class InviteController extends GetxController{
   InviteProvider inviteProvider;
   bool isLoading=false;
-  InviteController({this.inviteProvider});
+  InviteController({required this.inviteProvider});
   String inviteEmail="";
   int invitesRemaining=0;
   @override

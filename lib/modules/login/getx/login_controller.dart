@@ -50,25 +50,24 @@ class LoginController extends GetxController {
 
     try {
       await googleSignIn.signOut();
-      final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       GoogleSignInAuthentication googleSignInAuthentication;
+      Map<String, String?> key;
       if (googleSignInAccount != null) {
         googleSignInAuthentication=
         await googleSignInAccount.authentication;
-      }
-      else{
-        _loginStateStream.value = LoginFailure(error: "There was an error on Google login");
-      }
+        key=
+        await _authenticationController.loginWithGoogle(googleSignInAuthentication.accessToken!,
+            googleSignInAuthentication.idToken!, googleSignInAuthentication.serverAuthCode!);
 
-      Map<String, String> key =
-      await _authenticationController.loginWithGoogle(googleSignInAuthentication.accessToken,
-          googleSignInAuthentication.idToken, googleSignInAuthentication.serverAuthCode);
-      if (key.containsKey("key")) {
+
+      String? keyVal=key['key'];
+      if (keyVal!=null) {
         final dynamic response =
-        await _authenticationController.getUserProfile(key["key"]);
+        await _authenticationController.getUserProfile(keyVal);
         if (response is UserProfileModel) {
           SharedPreferences.getInstance().then((value) {
-            value.setString("key", key["key"]);
+            value.setString("key", keyVal);
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -85,11 +84,19 @@ class LoginController extends GetxController {
           _loginStateStream.value = LoginFailure(error: response);
         }
       } else {
-        Get.snackbar("Error", key["error"],
-            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-        _loginStateStream.value = LoginFailure(error: key["error"]);
+        String? errorVal=key['error'];
+        if(errorVal!=null) {
+          Get.snackbar("Error", errorVal,
+              backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+          _loginStateStream.value = LoginFailure(error: errorVal);
+        }
       }
       update();
+
+  }
+    else{
+    _loginStateStream.value = LoginFailure(error: "There was an error on Google login");
+    }
     } on AuthenticationException catch (e) {
       _loginStateStream.value = LoginFailure(error: e.message);
     }
@@ -109,12 +116,13 @@ class LoginController extends GetxController {
     try {
       Map<String, String> key =
           await _authenticationController.login(email, userName, password);
-      if (key.containsKey("key")) {
+      String? keyVal=key['key'];
+      if (keyVal!=null) {
         final dynamic response =
-            await _authenticationController.getUserProfile(key["key"]);
+            await _authenticationController.getUserProfile(keyVal);
         if (response is UserProfileModel) {
           SharedPreferences.getInstance().then((value) {
-            value.setString("key", key["key"]);
+            value.setString("key", keyVal);
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -131,9 +139,12 @@ class LoginController extends GetxController {
           _loginStateStream.value = LoginFailure(error: response);
         }
       } else {
-        Get.snackbar("Error", key["error"],
-            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-        _loginStateStream.value = LoginFailure(error: key["error"]);
+        String? errorVal=key['error'];
+        if (errorVal!=null) {
+          Get.snackbar("Error", errorVal,
+              backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+          _loginStateStream.value = LoginFailure(error:errorVal);
+        }
       }
       update();
     } on AuthenticationException catch (e) {
@@ -145,24 +156,27 @@ class LoginController extends GetxController {
       String name, String userName, BuildContext context) async {
     _loginStateStream.value = LoginLoading();
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    try {
-      dynamic response =
-          await _authenticationController.updateUserProfileWithNameAndPassword(
-              preferences.getString("key"), name, userName);
-      if (response is UserProfileModel) {
-        //preferences.setString("user", jsonEncode(response));
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => CreatorProfilePage()));
-        _loginStateStream.value = LoggedInState(userProfileModel: response);
-      } else {
-        Get.snackbar("Error", response.toString(),
-            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-        _loginStateStream.value = LoginFailure(error: response);
+    String? key=preferences.getString("key");
+    if(key!=null) {
+      try {
+        dynamic response =
+        await _authenticationController.updateUserProfileWithNameAndPassword(
+            key, name, userName);
+        if (response is UserProfileModel) {
+          //preferences.setString("user", jsonEncode(response));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CreatorProfilePage()));
+          _loginStateStream.value = LoggedInState(userProfileModel: response);
+        } else {
+          Get.snackbar("Error", response.toString(),
+              backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+          _loginStateStream.value = LoginFailure(error: response);
+        }
+      } on AuthenticationException catch (e) {
+        _loginStateStream.value = LoginFailure(error: e.message);
       }
-    } on AuthenticationException catch (e) {
-      _loginStateStream.value = LoginFailure(error: e.message);
     }
   }
 
@@ -170,21 +184,24 @@ class LoginController extends GetxController {
       int id) async {
     _loginStateStream.value = LoginLoading();
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    try {
-      dynamic response =
-      await _authenticationController.followProfile(
-          preferences.getString("key"), id);
-      if (response is bool) {
-        Get.snackbar("Success", "Thanks For Liking",
-            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-        _loginStateStream.value = FollowedProfileState(isFollowed: true);
-      } else {
-        Get.snackbar("Error", response.toString(),
-            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-        _loginStateStream.value = FollowedProfileState(isFollowed: false);
+    String? key = preferences.getString("key");
+    if (key != null) {
+      try {
+        dynamic response =
+        await _authenticationController.followProfile(
+            key, id);
+        if (response is bool) {
+          Get.snackbar("Success", "Thanks For Liking",
+              backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+          _loginStateStream.value = FollowedProfileState(isFollowed: true);
+        } else {
+          Get.snackbar("Error", response.toString(),
+              backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+          _loginStateStream.value = FollowedProfileState(isFollowed: false);
+        }
+      } on AuthenticationException catch (e) {
+        _loginStateStream.value = LoginFailure(error: e.message);
       }
-    } on AuthenticationException catch (e) {
-      _loginStateStream.value = LoginFailure(error: e.message);
     }
   }
 

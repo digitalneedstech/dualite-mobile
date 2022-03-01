@@ -7,7 +7,7 @@ class VideoReelsList extends StatefulWidget {
 }
 class VideoReelsListState extends State<VideoReelsList>  with SingleTickerProviderStateMixin {
   PageController foryouController = new PageController();
-  AnimationController animationController;
+  late AnimationController animationController;
   bool _isFirstLoad=true;
 
   @override
@@ -37,17 +37,17 @@ class VideoReelsListState extends State<VideoReelsList>  with SingleTickerProvid
             if(reelsListController.controllersErrorMessages.isNotEmpty &&
             reelsListController.controllersErrorMessages[reelsListController.currentPlatingVideoIndex]!=null){
               return Center(
-                child: Text(reelsListController.controllersErrorMessages[reelsListController.currentPlatingVideoIndex]),
+                child: Text(reelsListController.controllersErrorMessages[reelsListController.currentPlatingVideoIndex]!),
               );
             }return ReelsSwitchPlayer(
                 videoModel: reelsListController.videosList[reelsListController
-                    .currentPlatingVideoIndex],
+                    .currentPlatingVideoIndex]!,
                 videoPlayerController1: reelsListController
                     .controllers[reelsListController
-                    .currentPlatingVideoIndex][0],
+                    .currentPlatingVideoIndex]![0],
                 videoPlayerController2: reelsListController
                     .controllers[reelsListController
-                    .currentPlatingVideoIndex][1],);
+                    .currentPlatingVideoIndex]![1],);
 
           });
     });

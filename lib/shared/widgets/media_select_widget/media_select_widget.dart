@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class MediaSelectWidget extends StatefulWidget{
   Function callback;
   final String mediaText1,mediaText2;
-  MediaSelectWidget({this.callback,this.mediaText1,this.mediaText2});
+  MediaSelectWidget({required this.callback,required this.mediaText1,required this.mediaText2});
   MediaSelectWidgetState createState()=>MediaSelectWidgetState();
 }
 class MediaSelectWidgetState extends State<MediaSelectWidget>{
@@ -20,9 +20,9 @@ class MediaSelectWidgetState extends State<MediaSelectWidget>{
             RadioListTile(
               groupValue: _selectedMediaVal,
               value: 0,
-              onChanged: (int index){
+              onChanged: (int? index){
                 setState(() {
-                  _selectedMediaVal=index;
+                  _selectedMediaVal=index!;
                 });
               },
               title: Text(widget.mediaText1),
@@ -30,9 +30,9 @@ class MediaSelectWidgetState extends State<MediaSelectWidget>{
             RadioListTile(
               groupValue: _selectedMediaVal,
               value: 1,
-              onChanged: (int index){
+              onChanged: (int? index){
                 setState(() {
-                  _selectedMediaVal=index;
+                  _selectedMediaVal=index!;
                 });
               },
               title: Text(widget.mediaText2),

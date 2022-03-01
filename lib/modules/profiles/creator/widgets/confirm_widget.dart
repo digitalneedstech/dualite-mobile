@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class ConfirmWidget extends StatelessWidget{
   Function callBack;
-  ConfirmWidget({this.callBack});
+  ConfirmWidget({required this.callBack});
   @override
   Widget build(BuildContext context) {
     final VideoListController videoListController=Get.find();

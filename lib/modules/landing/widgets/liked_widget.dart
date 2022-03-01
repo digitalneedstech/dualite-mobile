@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 
 class LikeWidget extends StatelessWidget{
   final VideoModel videoModel;
-  LikeWidget({this.videoModel});
+  LikeWidget({required this.videoModel});
   final VideoListController videoListController=Get.find();
   final AuthenticationController authenticationController=Get.find();
   @override
@@ -19,19 +19,19 @@ class LikeWidget extends StatelessWidget{
         bool isLiked=(videoListController.state as VideoLikedState).isLiked;
         return IconButton(icon: isLiked? Icon(Icons.favorite):Icon(Icons.favorite_border),
             onPressed: isLiked?null:(){
-              authenticationController.userProfileModel != null
+              authenticationController.userProfileModel.id != 0
                   ? videoListController.likeVideo(videoModel.id)
                   : Navigator.pushReplacementNamed(
                   context, Routes.USER_LOGIN);
             });
       }
       bool isLiked=false;
-      if(authenticationController.userProfileModel!=null)
+      if(authenticationController.userProfileModel.id!=0)
         isLiked=videoModel.liked.contains(authenticationController.userProfileModel.id);
-      return authenticationController.userProfileModel!=null
+      return authenticationController.userProfileModel.id!=0
       ?IconButton(icon: isLiked? Icon(Icons.favorite):Icon(Icons.favorite_border), onPressed:
           isLiked?null:(){
-            authenticationController.userProfileModel != null
+            authenticationController.userProfileModel.id != 0
                 ? videoListController.likeVideo(videoModel.id)
                 : Navigator.pushReplacementNamed(
                 context, Routes.USER_LOGIN);

@@ -66,8 +66,8 @@ class ProfileUpdationPageState extends State<ProfileUpdationPage> {
                             onTap: loginController.state is LoginLoading
                                 ? null
                                 : () {
-                                    if (_formKey.currentState.validate()) {
-                                      _formKey.currentState.save();
+                                    if (_formKey.currentState!.validate()) {
+                                      _formKey.currentState!.save();
                                       loginController
                                           .updateProfileWithNameAndBio(
                                               _nameController.text,
@@ -99,7 +99,7 @@ class ProfileUpdationPageState extends State<ProfileUpdationPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      authenticationController.userProfileModel.avatar == null
+                      authenticationController.userProfileModel.avatar == ""
                           ? CircleAvatar(
                               backgroundImage: AssetImage(
                                   "assets/images/author_image.jpg"),

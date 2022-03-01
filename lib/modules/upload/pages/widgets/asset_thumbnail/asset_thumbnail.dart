@@ -1,24 +1,22 @@
 
 import 'dart:typed_data';
 import 'package:dualites/modules/upload/getx/gallery_controller.dart';
-import 'package:dualites/modules/upload/pages/video_trimmer/video_trimmer.dart';
 import 'package:dualites/modules/upload/pages/videos_post/videos_post.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AssetThumbnail extends StatelessWidget {
-  AssetThumbnail({
-    Key key,
-    @required this.asset,
-  }) : super(key: key);
+  AssetThumbnail({required this.asset,
+  });
 
   final AssetEntity asset;
   final GalleryController galleryController=Get.find();
   @override
   Widget build(BuildContext context) {
     // We're using a FutureBuilder since thumbData is a future
-    return FutureBuilder<Uint8List>(
+    return FutureBuilder<Uint8List?>(
+      initialData: null,
       future: asset.thumbData,
       builder: (_, snapshot) {
         final bytes = snapshot.data;
@@ -37,7 +35,7 @@ class AssetThumbnail extends StatelessWidget {
 class ThumbnailWidget extends StatefulWidget{
   final AssetEntity asset;
   final Uint8List bytes;
-  ThumbnailWidget({this.asset,this.bytes});
+  ThumbnailWidget({required this.asset,required this.bytes});
   ThumbnailWidgetState createState()=>ThumbnailWidgetState();
 }
 class ThumbnailWidgetState extends State<ThumbnailWidget>{
@@ -69,7 +67,7 @@ class ThumbnailWidgetState extends State<ThumbnailWidget>{
                 galleryController.selectedAssets[1].videoDuration.inSeconds) {
               Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => VideoTrimmer()));
+                  MaterialPageRoute(builder: (context) => VideosPost()));
             }
             else {
               Navigator.push(

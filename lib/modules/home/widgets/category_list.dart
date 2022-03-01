@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 
 class CategoryListWidget extends StatelessWidget{
   final ScrollController scrollController;
-  CategoryListWidget({this.scrollController});
+  CategoryListWidget({required this.scrollController});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,7 +23,10 @@ class CategoryListWidget extends StatelessWidget{
                 isLoading: categoryController.isLoading,
                 child: AnimationLimiter(
                   child: ListView.builder(itemBuilder: (context, int index){
-                    CategoryModel categoryModel=categoryController.categoryList[index];
+                    if(categoryController.categoryList.isEmpty){
+                      return Center(child: Text("No Category Found",style: TextStyle(color: Colors.black)),);
+                    }
+                    CategoryModel? categoryModel=categoryController.categoryList[index];
                     return AnimateList(
                       index: index,
                       widget: InkWell(
@@ -32,13 +35,13 @@ class CategoryListWidget extends StatelessWidget{
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      CategoryVideosList(tagName: categoryModel.tag.toString(),
+                                      CategoryVideosList(tagName: categoryModel!.tag.toString(),
                                         scrollController: scrollController,
                                       )));
                         },
                         child: Container(
                           margin: const EdgeInsets.only(right: 5.0),
-                          child: Chip(label: Text(categoryModel.tag,style: TextStyle(color: Colors.grey.shade600,fontWeight: FontWeight.bold),),
+                          child: Chip(label: Text(categoryModel!.tag,style: TextStyle(color: Colors.grey.shade600,fontWeight: FontWeight.bold),),
                               backgroundColor: Colors.grey.shade200,padding: const EdgeInsets.all(8.0)),
                         ),
                       ),

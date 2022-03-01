@@ -7,18 +7,17 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class ReelsListController extends GetxController{
-  RxList<VideoModel> videosList = RxList<VideoModel>();
+  RxList<VideoModel?> videosList = RxList<VideoModel>();
   RxList<VideoControllerModel> videosControllers = RxList<VideoControllerModel>();
   bool isLoading = true;
-  String errorMessage;
+  String errorMessage="";
   int currentIndexPlaying=0;
   String nextUrl='https://dualite.xyz/api/v1/videos';
   ReelsListProvider reelsListProvider;
-  ReelsListController({this.reelsListProvider});
+  ReelsListController({required this.reelsListProvider});
   final _reelsStateStream = ReelsLoadState().obs;
-  VideoModel videoModelToBePlayed;
+  VideoModel? videoModelToBePlayed;
   ReelsLoadState get state => _reelsStateStream.value;
-  Rx<VideoPlayerController> videoPlayerController=Rx<VideoPlayerController>();
   initializeState(){
     _reelsStateStream.value=ReelsLoadState();
   }
@@ -30,7 +29,7 @@ class ReelsListController extends GetxController{
 
   _getNextVideosList(){
     isLoading=true;
-    VideoListProvider().getVideosList(
+    reelsListProvider.getVideosList(
       nextUrl,
       onSuccess: (posts)async {
         videosList.addAll(posts.results);
@@ -38,7 +37,7 @@ class ReelsListController extends GetxController{
         isLoading=false;
         if(posts.results.isEmpty){
           //_reelsStateStream.value=ReelsLoaded(isReelsLoaded: true);
-          videoModelToBePlayed=null;
+          videoModelToBePlayed=VideoModel(id: 0);
           update();
         }
         else {
@@ -93,8 +92,5 @@ class ReelsListController extends GetxController{
       currentIndexPlaying=index;
       update();
     }
-  }
-  onClose(){
-    videoPlayerController.value=null;
   }
 }

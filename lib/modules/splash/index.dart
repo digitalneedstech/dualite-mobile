@@ -24,9 +24,10 @@ class SplashPageState extends State<SplashPage> {
       AuthenticationController authenticationController = Get.put(
           AuthenticationController(new AuthenticationService(Dio())));
       SharedPreferences preferences=await SharedPreferences.getInstance();
-      if(preferences.containsKey("key")){
+      String? key=preferences.getString("key");
+      /*if(key!=null){
         final dynamic response =
-        await authenticationController.getUserProfile(preferences.getString("key"));
+        await authenticationController.getUserProfile(key);
         if (response is UserProfileModel) {
           authenticationController.userProfileModel=response;
           Navigator.pushReplacement(
@@ -39,7 +40,7 @@ class SplashPageState extends State<SplashPage> {
 
         }
       }else {
-        Navigator.pushReplacement(
+        */Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) =>
@@ -47,7 +48,7 @@ class SplashPageState extends State<SplashPage> {
                       userProfileModel: new UserProfileModel(isCreator: false),
                       index: 0,
                     )));
-      }
+      //}
     });
   }
 
@@ -106,22 +107,25 @@ class SplashPageState extends State<SplashPage> {
 
   Future handleDynamicLinks() async {
     // 1. Get the initial dynamic link if the app is opened with a dynamic link
-    final PendingDynamicLinkData data =
+    final PendingDynamicLinkData? data =
     await FirebaseDynamicLinks.instance.getInitialLink();
+    if(data!=null)
+      _handleDeepLink(data);
 
     // 3. Register a link callback to fire if the app is opened up from the background
-    // using a dynamic link.
+    // using a dynamic link.*//*
     FirebaseDynamicLinks.instance.onLink(
-        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+        onSuccess: (PendingDynamicLinkData? dynamicLink) async {
           // 3a. handle link that has been retrieved
-          _handleDeepLink(dynamicLink);
+          if(dynamicLink!=null)
+            _handleDeepLink(dynamicLink);
         }, onError: (OnLinkErrorException e) async {
       print('Link Failed: ${e.message}');
     });
   }
 
-  void _handleDeepLink(PendingDynamicLinkData data) {
-    final Uri deepLink = data?.link;
+  void _handleDeepLink(PendingDynamicLinkData? data) {
+    final Uri deepLink = data!.link;
     if (deepLink != null) {
       print('_handleDeepLink | deeplink: $deepLink');
 
@@ -131,12 +135,13 @@ class SplashPageState extends State<SplashPage> {
       if (isPost) {
         // get the title of the post
         var videoId = deepLink.queryParameters['id'];
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => LandingPage(id: int.parse(videoId))),
-        );
+        if(videoId!=null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LandingPage(id: int.parse(videoId))),
+          );
+        }
       }
     }
   }

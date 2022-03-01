@@ -5,12 +5,13 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RecommendationController extends GetxController{
-  List<VideoModel> videosList = [];
+  List<VideoModel?> videosList = [];
   bool isLoading = true;
-  String errorMessage;
+  String errorMessage="";
   String nextUrl='https://dualite.xyz/api/v1/videos/recommended/';
   RecommendationProvider recommendationProvider;
-  RecommendationController({this.recommendationProvider});
+  RecommendationController({required this.recommendationProvider});
+
   @override
   void onInit() {
     getVideosModel();
@@ -20,21 +21,24 @@ class RecommendationController extends GetxController{
 
   void getVideosModel()async{
     SharedPreferences preferences=await SharedPreferences.getInstance();
-    String key =preferences.getString("key");
-    final dynamic response =
+    String? key =preferences.getString("key");
+    if(key!=null) {
+      final dynamic response =
       await recommendationProvider.getRecommendedVideos(
-          "https://dualite.xyz/api/v1/videos/recommended/",key);
-      if(response is VideosList){
-        nextUrl=response.next;
-        videosList.addAll(response.results);
-        isLoading=false;
+          "https://dualite.xyz/api/v1/videos/recommended/", key);
+      if (response is VideosList) {
+        List<VideoModel?> videos=response.results;
+        Iterable<VideoModel?> list=response.results.where((element) => element!=null);
+        nextUrl = response.next;
+        videosList.addAll(list);
+        isLoading = false;
         update();
       }
-      else{
-        isLoading=false;
-        errorMessage=response;
+      else {
+        isLoading = false;
+        errorMessage = response;
         update();
       }
-
+    }
   }
 }

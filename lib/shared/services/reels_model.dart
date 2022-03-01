@@ -6,9 +6,9 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class ReelsModel extends GetxController {
-  VideoPlayerController controller;
-  ReelsListProvider reelsListProvider;
-  RxList<VideoModel> videosList = RxList<VideoModel>();
+  late VideoPlayerController controller;
+  late ReelsListProvider reelsListProvider;
+  RxList<VideoModel?> videosList = RxList<VideoModel>();
   int prevVideo = 0;
   int currentPlatingVideoIndex = 0;
   Map<int, List<VideoPlayerController>> controllers = {};
@@ -23,10 +23,10 @@ class ReelsModel extends GetxController {
   }
   disposeResources(){
     for(var v in controllers.keys) {
-      List<VideoPlayerController> videoPlayers=controllers[v];
-      if(videoPlayers.isNotEmpty) {
-        final VideoPlayerController _controller = controllers[v][0];
-        final VideoPlayerController _controller2 = controllers[v][1];
+      List<VideoPlayerController>? videoPlayers=controllers[v];
+      if(videoPlayers!=null && videoPlayers.isNotEmpty) {
+        final VideoPlayerController _controller = controllers[v]![0];
+        final VideoPlayerController _controller2 = controllers[v]![1];
 
         /// Dispose controller
         _controller.setVolume(0.0);
@@ -42,7 +42,8 @@ class ReelsModel extends GetxController {
       "https://dualite.xyz/api/v1/videos/",
       onSuccess: (posts) {
         if (posts.results.isNotEmpty) {
-          videosList.addAll(posts.results.where((e) => e.type == "DUALITE"));
+
+          videosList.addAll(posts.results.where((e) => e!=null && e.type == "DUALITE"));
           nextUrl = posts.next;
           currentPlatingVideoIndex = 0;
           if(posts.results.length>0) {
@@ -77,8 +78,8 @@ class ReelsModel extends GetxController {
     _disposeControllerAtIndex(index - 2);
 
     /// Play current video (already initialized)
-    List<VideoPlayerController> videoPlayers=controllers[index];
-    if(videoPlayers.isEmpty)
+    List<VideoPlayerController>? videoPlayers=controllers[index];
+    if(videoPlayers!=null && videoPlayers.isEmpty)
       playControllerAtIndex(index);
 
     /// Initialize [index + 1] controller
@@ -93,8 +94,8 @@ class ReelsModel extends GetxController {
     _disposeControllerAtIndex(index + 2);
 
     /// Play current video (already initialized)
-    List<VideoPlayerController> videoPlayers=controllers[index];
-    if(videoPlayers.isEmpty)
+    List<VideoPlayerController>? videoPlayers=controllers[index];
+    if(videoPlayers!=null && videoPlayers.isEmpty)
       playControllerAtIndex(index);
 
     /// Initialize [index - 1] controller
@@ -105,23 +106,23 @@ class ReelsModel extends GetxController {
     if (videosList.length > index && index >= 0) {
       /// Create new controller
       final VideoPlayerController _controller =
-          VideoPlayerController.network(videosList[index].contentOne,videoPlayerOptions: VideoPlayerOptions(
+          VideoPlayerController.network(videosList[index]!.contentOne,videoPlayerOptions: VideoPlayerOptions(
               mixWithOthers: true
           ));
 
 
       final VideoPlayerController _controller2 =
-      VideoPlayerController.network(videosList[index].contentTwo,videoPlayerOptions: VideoPlayerOptions(
+      VideoPlayerController.network(videosList[index]!.contentTwo,videoPlayerOptions: VideoPlayerOptions(
     mixWithOthers: true
     ));
       _controller.initialize().then((value){
-        if(_controller.value.duration==null || _controller.value.duration==Duration(seconds: 0)){
+        if(_controller.value.duration==Duration(seconds: 0)){
           controllers[index]=[];
           controllersErrorMessages[index]="First Videos are blank.";
         }
         else{
           _controller2.initialize().then((value){
-            if(_controller2.value.duration==null || _controller2.value.duration==Duration(seconds: 0)){
+            if(_controller2.value.duration==Duration(seconds: 0)){
               controllers[index]=[];
               controllersErrorMessages[index]="Second Videos are blank.";
             }
@@ -146,10 +147,10 @@ class ReelsModel extends GetxController {
       if(controllers[index]==null){
         await _initializeControllerAtIndex(index);
       }
-      List<VideoPlayerController> videoPlayers=controllers[index];
+      List<VideoPlayerController>? videoPlayers=controllers[index];
       if(videoPlayers!=null && videoPlayers.isNotEmpty) {
-        final VideoPlayerController _controller = controllers[index][0];
-        final VideoPlayerController _controller2 = controllers[index][1];
+        final VideoPlayerController _controller = controllers[index]![0];
+        final VideoPlayerController _controller2 = controllers[index]![1];
 
         /// Play controller
         _controller.seekTo(Duration(seconds: 0));
@@ -167,10 +168,10 @@ class ReelsModel extends GetxController {
     if (videosList.length > index && index >= 0) {
       /// Get controller at [index]
       ///
-      List<VideoPlayerController> videoPlayers=controllers[index];
-      if(videoPlayers.isNotEmpty) {
-        final VideoPlayerController _controller = controllers[index][0];
-        final VideoPlayerController _controller2 = controllers[index][1];
+      List<VideoPlayerController>? videoPlayers=controllers[index];
+      if(videoPlayers!=null && videoPlayers.isNotEmpty) {
+        final VideoPlayerController _controller = controllers[index]![0];
+        final VideoPlayerController _controller2 = controllers[index]![1];
 
         /// Pause
         _controller.pause();
@@ -186,9 +187,9 @@ class ReelsModel extends GetxController {
   void _disposeControllerAtIndex(int index) {
     if (videosList.length > index && index >= 0) {
       /// Get controller at [index]
-      if(controllers[index].isNotEmpty) {
-        final VideoPlayerController _controller = controllers[index][0];
-        final VideoPlayerController _controller2 = controllers[index][1];
+      if(controllers[index]!=null && controllers[index]!.isNotEmpty) {
+        final VideoPlayerController _controller = controllers[index]![0];
+        final VideoPlayerController _controller2 = controllers[index]![1];
 
         /// Dispose controller
         _controller.dispose();

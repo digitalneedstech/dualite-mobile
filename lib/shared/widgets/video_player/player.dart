@@ -10,17 +10,16 @@ class PlayerWidget extends StatefulWidget {
   final DeviceOrientation deviceOrientation;
 
   PlayerWidget({
-    @required this.videoPlayerController,
-    this.looping, this.autoplay,this.deviceOrientation=DeviceOrientation.landscapeRight,
-    Key key,
-  }) : super(key: key);
+    required this.videoPlayerController,
+   required this.looping,required this.autoplay,this.deviceOrientation=DeviceOrientation.landscapeRight
+  });
 
   @override
   PlayerWidgetState createState() => PlayerWidgetState();
 }
 
 class PlayerWidgetState extends State<PlayerWidget> {
-  ChewieController _chewieController;
+  late ChewieController _chewieController;
 
   @override
   void initState() {

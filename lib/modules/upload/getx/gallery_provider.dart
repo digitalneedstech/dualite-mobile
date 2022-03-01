@@ -29,80 +29,94 @@ class GalleryProvider{
 
   Future<dynamic> postVideoContent(
       String url,String title,String description,String type,String tags,String thumbnailUrl) async {
-    try {
-      SharedPreferences preferences=await SharedPreferences.getInstance();
-      String authKey=preferences.getString("key");
-      var formData = {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String? authKey = preferences.getString("key");
+    if (authKey != null) {
+      try {
+        var formData = {
         "title":title,
         "description":description,
         "type":type,
-        "tags":tags==null || tags=="" ?["Movies","Video"] :[tags],
-        "thumbnail_url":thumbnailUrl
-      };
-      var response = await dio.post(url,data: formData,options:Options(
-        contentType: "application/json",
-        headers: {
-          "Authorization": "token $authKey"
-        }
-      ));
-      return VideoModel.fromMap(response.data);
-    } on DioError catch (e) {
-      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
-          DioErrorType.CONNECT_TIMEOUT == e.type) {
-        return "Server is not reachable. Please verify your internet connection and try again";
-      } else if (DioErrorType.RESPONSE == e.type) {
-        if(Map.from(e.response.data).containsKey("detail"))
-          return Map.from(e.response.data)["detail"];
-        else
-          return "There was some other client error";
-      } else if (DioErrorType.DEFAULT == e.type) {
-        if (e.message.contains('SocketException')) {
-          return "There was socket issue from server side encountered";
-        }
-      } else {
-        return "There was some issue observed on server side";
-      }
-
+        "tags":tags=="" ?["Movies", "Video"
+    ] :[tags],
+    "thumbnail_url":thumbnailUrl
+    };
+    var response = await dio.post(url,data: formData,options:Options(
+    contentType: "application/json",
+    headers: {
+    "Authorization": "token $authKey"
     }
-  }
+    ));
+    return VideoModel.fromMap(response.data);
 
-
-  Future<Map<bool,String>> postThumbnailFile(
-      String url,File thumbnail) async {
-    Map<bool,String> postVideoFileResponse={};
-    try {
-      SharedPreferences preferences=await SharedPreferences.getInstance();
-      String authKey=preferences.getString("key");
-      String thumbnailImagePath = thumbnail.path.split('/').last;
-      var formData = new FormData.fromMap({
-        "thumbnail":await MultipartFile.fromFile(thumbnail.path,filename: thumbnailImagePath)
-      });
-      var response = await dio.post(url,data: formData,options:Options(
-          contentType: 'multipart/form-data',
-          headers: {
-            "Authorization": "token $authKey"
-          }
-      ));
-      postVideoFileResponse={true:response.data["thumbnail"]};
     } on DioError catch (e) {
-      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
-          DioErrorType.CONNECT_TIMEOUT == e.type) {
-        postVideoFileResponse={false:"Server is not reachable. Please verify your internet connection and try again"};
+    if (DioErrorType.receiveTimeout == e.type ||
+    DioErrorType.connectTimeout == e.type) {
+    return "Server is not reachable. Please verify your internet connection and try again";
 
-      } else if (DioErrorType.RESPONSE == e.type) {
-        postVideoFileResponse={false:"Server responded with wrong error code"};
-      } else if (DioErrorType.DEFAULT == e.type) {
+    } else if (DioErrorType.response == e.type) {
+    return "Server responded with wrong error code";
+    } /*else if (DioErrorType.DEFAULT == e.type) {
         if (e.message.contains('SocketException')) {
           postVideoFileResponse={false:"There was socket issue from server side encountered"};
         }
         else {
           postVideoFileResponse={false:"There was some issue observed on server side"};
         }
-      } else {
-        postVideoFileResponse={false:"There was some issue observed on server side"};
-      }
+      } */else {
+    return "There was some issue observed on server side";
+    }
 
     }
+  }
+  }
+
+
+  Future<Map<bool,String>> postThumbnailFile(
+      String url,File thumbnail) async {
+    Map<bool,String> postVideoFileResponse={};
+
+      SharedPreferences preferences=await SharedPreferences.getInstance();
+      String? authKey=preferences.getString("key");
+      if(authKey!=null) {
+        try {
+          String thumbnailImagePath = thumbnail.path
+              .split('/')
+              .last;
+          var formData = new FormData.fromMap({
+            "thumbnail": await MultipartFile.fromFile(
+                thumbnail.path, filename: thumbnailImagePath)
+          });
+          var response = await dio.post(url, data: formData, options: Options(
+              contentType: 'multipart/form-data',
+              headers: {
+                "Authorization": "token $authKey"
+              }
+          ));
+          postVideoFileResponse = {true: response.data["thumbnail"]};
+        } on DioError catch (e) {
+          if (DioErrorType.receiveTimeout == e.type ||
+              DioErrorType.connectTimeout == e.type) {
+            postVideoFileResponse = {
+              false: "Server is not reachable. Please verify your internet connection and try again"
+            };
+          } else if (DioErrorType.response == e.type) {
+            postVideoFileResponse =
+            {false: "Server responded with wrong error code"};
+          }
+          /*else if (DioErrorType.DEFAULT == e.type) {
+        if (e.message.contains('SocketException')) {
+          postVideoFileResponse={false:"There was socket issue from server side encountered"};
+        }
+        else {
+          postVideoFileResponse={false:"There was some issue observed on server side"};
+        }
+      } */ else {
+            postVideoFileResponse =
+            {false: "There was some issue observed on server side"};
+          }
+        }
+      }
     return Future.value(postVideoFileResponse);
   }
 
@@ -128,20 +142,20 @@ class GalleryProvider{
         return true;
       return false;
     } on DioError catch (e) {
-      if (DioErrorType.RECEIVE_TIMEOUT == e.type ||
-          DioErrorType.CONNECT_TIMEOUT == e.type) {
+      if (DioErrorType.receiveTimeout == e.type ||
+          DioErrorType.connectTimeout == e.type) {
         postVideoFileResponse={false:"Server is not reachable. Please verify your internet connection and try again"};
 
-      } else if (DioErrorType.RESPONSE == e.type) {
+      } else if (DioErrorType.response == e.type) {
         postVideoFileResponse={false:"Server responded with wrong error code"};
-      } else if (DioErrorType.DEFAULT == e.type) {
+      } /*else if (DioErrorType.DEFAULT == e.type) {
         if (e.message.contains('SocketException')) {
           postVideoFileResponse={false:"There was socket issue from server side encountered"};
         }
         else {
           postVideoFileResponse={false:"There was some issue observed on server side"};
         }
-      } else {
+      } */else {
         postVideoFileResponse={false:"There was some issue observed on server side"};
       }
 

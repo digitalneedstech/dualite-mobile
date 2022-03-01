@@ -5,14 +5,14 @@ import 'package:dualites/shared/library/api_request.dart';
 
 class CategoryListProvider {
   void getCategoriesList({
-    Function() beforeSend,
-    Function(CategoryList posts) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(CategoryList posts)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
-    ApiRequest(url: 'https://dualite.xyz/api/v1/tags/', data: null).get(
+    ApiRequest(url: 'https://dualite.xyz/api/v1/tags/',authKey: '').get(
       beforeSend: () => {if (beforeSend != null) beforeSend()},
       onSuccess: (data) {
-        onSuccess(CategoryList.fromMap(Map.from(data)));
+        onSuccess!(CategoryList.fromMap(Map.from(data)));
       },
       onError: (error) => {if (onError != null) onError(error)},
     );

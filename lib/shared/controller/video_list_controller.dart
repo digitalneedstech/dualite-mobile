@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:dualites/models/user_profile_model.dart';
 import 'package:dualites/modules/authentication/authentication_controller.dart';
 import 'package:dualites/modules/home/widgets/models/video_list.dart';
@@ -12,11 +13,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoListController extends GetxController {
-  List<VideoModel> videosList = [];
-  List<VideoModel> usersVideos = [];
-  List<VideoModel> searchVideos = [];
-  List<VideoModel> searchResultVideos = [];
-  List<UserProfileModel> searchProfiles = [];
+  List<VideoModel?> videosList = [];
+  List<VideoModel?> usersVideos = [];
+  List<VideoModel?> searchVideos = [];
+  List<VideoModel?> searchResultVideos = [];
+  List<UserProfileModel?> searchProfiles = [];
   String selectedSearchCategory="PILLS";
   VideoControllerModel videoControllerModel = new VideoControllerModel();
   bool isLoading = true;
@@ -27,10 +28,10 @@ class VideoListController extends GetxController {
   String nextSearchUrl = 'https://dualite.xyz/api/v1/videos/search?title=';
   String nextProfileSearchUrl = 'https://dualite.xyz/api/v1/profiles/search?name=';
   VideoListProvider videoListProvider;
-  VideoPlayerController playerController1, playerController2;
-  VideoListController({this.videoListProvider});
+  late VideoPlayerController playerController1, playerController2;
+  VideoListController({required this.videoListProvider});
   final _videoStateStream = VideoLoadState().obs;
-  VideoModel videoModel;
+  late VideoModel videoModel;
   VideoLoadState get state => _videoStateStream.value;
   initializeState() {
     _videoStateStream.value = VideoLoadState();
@@ -38,7 +39,7 @@ class VideoListController extends GetxController {
 
   @override
   void onInit() {
-    VideoListProvider().getVideosList(
+    videoListProvider.getVideosList(
       nextUrl,
       onSuccess: (posts) {
         videosList.addAll(posts.results);
@@ -57,7 +58,7 @@ class VideoListController extends GetxController {
   }
 
   getNextVideosList() {
-    VideoListProvider().getVideosList(
+    videoListProvider.getVideosList(
       nextUrl,
       onSuccess: (posts) {
         videosList.addAll(posts.results);
@@ -78,7 +79,7 @@ class VideoListController extends GetxController {
   }
 
   getVideosBasedOnCategory(String tagName) {
-    VideoListProvider().getVideosList(
+    videoListProvider.getVideosList(
       "https://dualite.xyz/api/v1/tags/videos/?tag="+tagName,
       onSuccess: (posts) {
         videosList.addAll(posts.results);
@@ -110,7 +111,7 @@ class VideoListController extends GetxController {
     nextLoading = true;
     searchProfiles=[];
     update();
-    VideoListProvider().getVideosListFromSearchQuery(
+    videoListProvider.getVideosListFromSearchQuery(
       nextSearchUrl,
       title,
       onSuccess: (posts) {
@@ -136,12 +137,12 @@ class VideoListController extends GetxController {
     searchVideos=[];
     nextLoading = true;
     update();
-    VideoListProvider().getProfilesListFromSearchQuery(
+    VideoListProvider(dio: Dio()).getProfilesListFromSearchQuery(
       nextProfileSearchUrl,
       title,
       onSuccess: (posts) {
         searchProfiles.addAll(posts.results);
-        if(posts.next!=null)
+        if(posts.next!="")
           nextProfileSearchUrl = posts.next;
         nextLoading = false;
         update();
@@ -173,21 +174,23 @@ class VideoListController extends GetxController {
     _videoStateStream.value = VideoDeletedInProgressState();
     isLoading = true;
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String key = preferences.getString("key");
-    final dynamic response = await videoListProvider.deleteVideo(
-        "https://dualite.xyz/api/v1/videos/$id/", key);
-    if (response is bool) {
-      _videoStateStream.value = VideoDeletedResponseState();
-      Navigator.pop(context, true);
-      AuthenticationController authenticationController = Get.find();
-      getVideosModel();
-      Get.snackbar("Success", "Video is Deleted",
-          backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
-    } else {
-      _videoStateStream.value = VideoDeletedResponseState();
-      Navigator.pop(context, false);
-      Get.snackbar("Error", response,
-          backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+    String? key = preferences.getString("key");
+    if(key!=null) {
+      final dynamic response = await videoListProvider.deleteVideo(
+          "https://dualite.xyz/api/v1/videos/$id/", key);
+      if (response is bool) {
+        _videoStateStream.value = VideoDeletedResponseState();
+        Navigator.pop(context, true);
+        AuthenticationController authenticationController = Get.find();
+        getVideosModel();
+        Get.snackbar("Success", "Video is Deleted",
+            backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
+      } else {
+        _videoStateStream.value = VideoDeletedResponseState();
+        Navigator.pop(context, false);
+        Get.snackbar("Error", response,
+            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+      }
     }
   }
 
@@ -196,17 +199,19 @@ class VideoListController extends GetxController {
     update();
     usersVideos = [];
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String token = preferences.getString("key");
-    dynamic response =
-        await videoListProvider.getUserVideos(fetchUserVideos, token);
+    String? token = preferences.getString("key");
+    if(token!=null) {
+      dynamic response =
+      await videoListProvider.getUserVideos(fetchUserVideos, token);
 
-    if (response is VideosList) {
-      usersVideos.addAll(response.results);
-    } else {
-      errorMessage = response;
+      if (response is VideosList) {
+        usersVideos.addAll(response.results);
+      } else {
+        errorMessage = response;
+      }
+      isLoading = false;
+      update();
     }
-    isLoading = false;
-    update();
   }
 
   initializeVideoControllerAndPlayVideo(double height, String videoUrl) {
@@ -224,17 +229,19 @@ class VideoListController extends GetxController {
 
   void likeVideo(int id) async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    String key = preferences.getString("key");
-    dynamic response = await videoListProvider.likeVideo(
-        "https://dualite.xyz/api/v1/videos/${id}/like/", key);
-    if (response is bool) {
-      Get.snackbar("Success", "Thanks For Liking",
-          backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
-      _videoStateStream.value = VideoLikedState(isLiked: true);
-    } else {
-      Get.snackbar("Error", response.toString(),
-          backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
-      _videoStateStream.value = VideoLikedState(isLiked: false);
+    String? key = preferences.getString("key");
+    if(key!=null) {
+      dynamic response = await videoListProvider.likeVideo(
+          "https://dualite.xyz/api/v1/videos/${id}/like/", key);
+      if (response is bool) {
+        Get.snackbar("Success", "Thanks For Liking",
+            backgroundColor: Colors.green, snackPosition: SnackPosition.BOTTOM);
+        _videoStateStream.value = VideoLikedState(isLiked: true);
+      } else {
+        Get.snackbar("Error", response.toString(),
+            backgroundColor: Colors.red, snackPosition: SnackPosition.BOTTOM);
+        _videoStateStream.value = VideoLikedState(isLiked: false);
+      }
     }
   }
 

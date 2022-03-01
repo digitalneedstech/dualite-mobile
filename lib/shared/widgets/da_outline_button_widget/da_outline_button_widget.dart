@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class DaOutlineButtonWidget extends StatelessWidget {
-  VoidCallback callback;
+  VoidCallback? callback;
   String buttonText;
-  DaOutlineButtonWidget({this.buttonText,this.callback});
+  DaOutlineButtonWidget({required this.buttonText,this.callback});
   @override
   Widget build(BuildContext context) {
     return OutlineButton(
-        onPressed:(){
-          callback();
-        } ,
+        onPressed:callback!=null?(){
+          callback!();
+        } :callback,
         child: Center(
           child: Text(
             buttonText,

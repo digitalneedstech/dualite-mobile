@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:dualites/models/user_profile_model.dart';
 import 'package:dualites/modules/authentication/authentication_controller.dart';
-import 'package:dualites/modules/dashboard/dashboard.dart';
 import 'package:dualites/modules/login/login.dart';
 import 'package:dualites/modules/login/profile_updation.dart';
 import 'package:dualites/modules/login/user/signin/sign_in.dart';
@@ -26,10 +26,10 @@ import 'package:get/get.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Dio dio=Dio();
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  /*SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Color(0xFF2D388A), statusBarBrightness: Brightness.light));
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);*/
   runApp(MyApp());
 
 }
@@ -49,16 +49,15 @@ class MyApp extends GetWidget<AuthenticationController> {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: {
-        Routes.HOME:(context)=>Widgets(index: 0,),
-        Routes.USER_HOME:(context)=>Widgets(index: 0,),
+        Routes.HOME:(context)=>Widgets(index: 0,userProfileModel: UserProfileModel(id: 0),),
+        Routes.USER_HOME:(context)=>Widgets(index: 0,userProfileModel: UserProfileModel(id: 0),),
         Routes.SPLASH_HOME:(context)=>SplashPage(),
-        Routes.CREATOR_PROFILE:(context)=>Widgets(index: 3),
-        Routes.USER_PROFILE:(context)=>Widgets(index: 2),
+        Routes.CREATOR_PROFILE:(context)=>Widgets(index: 3,userProfileModel: UserProfileModel(id: 0),),
+        Routes.USER_PROFILE:(context)=>Widgets(index: 2,userProfileModel: UserProfileModel(id: 0),),
         Routes.USER_LOGIN:(context)=>UserSignInPage(),
         Routes.USER_SIGNUP:(context)=>UserSignUpPage(),
         Routes.USER_WELCOME_NEXT:(context)=>WelcomeNextPage(),
         Routes.USER_WELCOME_HOME:(context)=>WelcomeHomePage(),
-        Routes.DASHBOARD:(context)=>DashboardPage(),
         Routes.LOGIN:(context)=>LoginPage(),
         Routes.PROFILE_UPDATION:(context)=>ProfileUpdationPage(),
         Routes.LIKED_VIDEOS:(context)=>LikedVideos(),

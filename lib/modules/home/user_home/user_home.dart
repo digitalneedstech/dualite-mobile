@@ -20,7 +20,7 @@ class UserHomePageState extends State<UserHomePage> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         VideoListController controller = Get.find();
-        if (controller.nextUrl != null) controller.getNextVideosList();
+        if (controller.nextUrl != "") controller.getNextVideosList();
       }
     });
     super.initState();
@@ -57,7 +57,7 @@ class UserHomePageState extends State<UserHomePage> {
                         ),
                         InkWell(
                             onTap: () async {
-                              authenticationController.userProfileModel != null
+                              authenticationController.userProfileModel.id != 0
                                   ? Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -67,7 +67,7 @@ class UserHomePageState extends State<UserHomePage> {
                             },
                             child: CircleAvatar(
                               backgroundImage:
-                                  AssetImage (authenticationController.userProfileModel==null || authenticationController.userProfileModel.avatar==null ||
+                                  AssetImage (
                                       authenticationController.userProfileModel.avatar=="" ?
                                       "assets/images/avatar_image.jpg":authenticationController.userProfileModel.avatar),
                               radius: 30.0,

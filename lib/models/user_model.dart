@@ -1,7 +1,7 @@
 class User{
 
   String email,userName,password;
-  User({this.password,this.email,this.userName});
+  User({required this.password,required this.email,required this.userName});
   toJsonForRegister(){
     return {
       "email":email,

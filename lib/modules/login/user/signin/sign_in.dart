@@ -110,7 +110,7 @@ class UserSignInPageState extends State<UserSignInPage> {
                           ),
                         ),
                         validator: (val) =>
-                            val.trim() == "" ? "Please Enter Email" : null,
+                            val!.trim() == "" ? "Please Enter Email" : null,
                       ),
                       SizedBox(
                         height: 10.0,
@@ -128,7 +128,7 @@ class UserSignInPageState extends State<UserSignInPage> {
                           ),
                         ),
                         validator: (val) =>
-                            val.trim() == "" ? "Please Enter Password" : null,
+                            val!.trim() == "" ? "Please Enter Password" : null,
                       ),
                       SizedBox(
                         height: 20.0,
@@ -138,7 +138,7 @@ class UserSignInPageState extends State<UserSignInPage> {
                         children: [
                           RaisedButton(
                             onPressed: () {
-                              if (_key.currentState.validate()) {
+                              if (_key.currentState!.validate()) {
                                 if(_userNameController.text.trim()=="")
                                   _userNameController.text=_emailController.text;
                                 _controller.login(

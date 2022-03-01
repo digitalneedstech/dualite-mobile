@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 class Widgets extends StatefulWidget {
   int index;
   final UserProfileModel userProfileModel;
-  Widgets({this.index = 0,this.userProfileModel});
+  Widgets({this.index = 0,required this.userProfileModel});
   _widgetsPageState createState() => _widgetsPageState();
 }
 
@@ -73,9 +73,6 @@ class _widgetsPageState extends State<Widgets> {
     return BottomNavigationBarItem(
         icon:
         Icon(icon, color: curIndex == index ? Color(0xFF2D388A) : Colors.black),
-        title: Text(title,
-            style: TextStyle(
-                color: curIndex == index ? Color(0xFF2D388A) : Colors.black54,
-                fontSize: 16.0)));
+        label: title);
   }
 }

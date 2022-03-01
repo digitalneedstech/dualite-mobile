@@ -5,16 +5,16 @@ import 'package:dualites/shared/library/api_request.dart';
 
 class ReelsListProvider {
   Dio dio;
-  ReelsListProvider({this.dio});
+  ReelsListProvider({required this.dio});
   void getVideosList(String url,{
-    Function() beforeSend,
-    Function(VideosList videosList) onSuccess,
-    Function(dynamic error) onError,
+    Function()? beforeSend,
+    Function(VideosList videosList)? onSuccess,
+    Function(dynamic error)? onError,
   }) {
-    ApiRequest(url: url, data: null).get(
+    ApiRequest(url: url,  authKey: '').get(
       beforeSend: () => {if (beforeSend != null) beforeSend()},
       onSuccess: (data) {
-        onSuccess(VideosList.fromMap(Map.from(data)));
+        onSuccess!(VideosList.fromMap(Map.from(data)));
       },
       onError: (error) => {if (onError != null) onError(error)},
     );
@@ -28,8 +28,8 @@ class ReelsListProvider {
       );
       return VideosList.fromMap(Map.from(response.data));
     } on DioError catch (e) {
-      if(Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if(Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }
@@ -43,8 +43,8 @@ class ReelsListProvider {
       );
       return VideoModel.fromMap(response.data);
     } on DioError catch (e) {
-      if(Map.from(e.response.data).containsKey("detail"))
-        return Map.from(e.response.data)["detail"];
+      if(Map.from(e.response!.data).containsKey("detail"))
+        return Map.from(e.response!.data)["detail"];
       else
         return "There was server error encountered";
     }

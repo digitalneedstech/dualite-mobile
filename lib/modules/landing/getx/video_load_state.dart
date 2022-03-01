@@ -12,7 +12,7 @@ class VideoInfoLoading extends VideoLoadState {}
 class VideoInfoLoaded extends VideoLoadState {
   final VideoModel videoInfo;
 
-  VideoInfoLoaded({@required this.videoInfo});
+  VideoInfoLoaded({required this.videoInfo});
 
   @override
   List<Object> get props => [];
@@ -21,7 +21,7 @@ class VideoInfoLoaded extends VideoLoadState {
 class VideosLoadedForUserId extends VideoLoadState {
   final List<VideoModel> videosList;
 
-  VideosLoadedForUserId({@required this.videosList});
+  VideosLoadedForUserId({required this.videosList});
 
   @override
   List<Object> get props => [];
@@ -29,7 +29,7 @@ class VideosLoadedForUserId extends VideoLoadState {
 
 class VideoLikedState extends VideoLoadState {
   bool isLiked;
-  VideoLikedState({this.isLiked});
+  VideoLikedState({required this.isLiked});
   @override
   List<Object> get props => [];
 }
@@ -48,7 +48,7 @@ class VideoDeletedResponseState extends VideoLoadState {
 class VideoInfoLoadingError extends VideoLoadState {
   final String error;
 
-  VideoInfoLoadingError({@required this.error});
+  VideoInfoLoadingError({required this.error});
 
   @override
   List<Object> get props => [error];

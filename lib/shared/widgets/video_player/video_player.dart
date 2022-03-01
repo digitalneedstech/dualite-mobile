@@ -10,17 +10,17 @@ class VideoPlayerWidget extends StatefulWidget {
 
 
   VideoPlayerWidget({
-    @required this.videoPlayerController,
-    this.looping, this.autoplay,
-    Key key,
-  }) : super(key: key);
+    required this.videoPlayerController,
+    required this.looping,required  this.autoplay
+
+  });
 
   @override
   _VideoPlayerWidgetState createState() => _VideoPlayerWidgetState();
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  ChewieController _chewieController;
+  late ChewieController _chewieController;
 
   @override
   void initState() {

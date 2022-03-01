@@ -16,7 +16,7 @@ import 'package:lottie/lottie.dart';
 class VideosListWidget extends StatelessWidget{
   final ScrollController scrollController;
   final String tagName;
-  VideosListWidget({this.scrollController,this.tagName});
+  VideosListWidget({required this.scrollController,this.tagName=""});
   final VideoListController videoListController=Get.find();
 
   final AuthenticationController authenticationController=Get.put(AuthenticationController(AuthenticationService(Dio())));
@@ -40,14 +40,14 @@ class VideosListWidget extends StatelessWidget{
                         child: Lottie.asset('assets/lotties/video_loader.json'),
                       );
                     }
-                    VideoModel videoModel=controller.videosList[index];
+                    VideoModel? videoModel=controller.videosList[index];
                     return AnimateList(index:index,widget:InkWell(
                       onTap: (){
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    LandingPage(id: videoModel.id,)));
+                                    LandingPage(id: videoModel!.id,)));
 
                       },
                       child: Container(
@@ -56,7 +56,7 @@ class VideosListWidget extends StatelessWidget{
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              videoModel.thumbnail==null ?
+                              videoModel!.thumbnail=="" ?
                               Container(
                                 width: MediaQuery.of(context).size.width,
                                 child: Container(

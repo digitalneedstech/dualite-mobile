@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 
 class CategoryVideosList extends StatelessWidget{
   final String tagName;
-  CategoryVideosList({this.tagName,this.scrollController});
+  CategoryVideosList({this.tagName="",required this.scrollController});
   final ScrollController scrollController;
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
       body: Container(
-        child: VideosListWidget(tagName: tagName,
+        child: VideosListWidget(tagName: tagName,scrollController: scrollController,
         ),
       )
     );

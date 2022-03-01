@@ -12,7 +12,7 @@ class UserInfoWidget extends StatelessWidget{
       builder: (AuthenticationController authenticationController) {
         return Column(
           children: [
-            authenticationController.userProfileModel.avatar==null ?CircleAvatar(
+            authenticationController.userProfileModel.avatar=="" ?CircleAvatar(
               backgroundImage: AssetImage("assets/images/author_image.jpg"),
               radius: 70,
             ):

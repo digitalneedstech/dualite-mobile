@@ -15,8 +15,7 @@ import 'package:lottie/lottie.dart';
 
 class VideosListWidget extends StatelessWidget{
   final ScrollController scrollController;
-  final String categoryId;
-  VideosListWidget({this.scrollController,this.categoryId});
+  VideosListWidget({required this.scrollController});
   final VideoListController videoListController=Get.find();
 
   final AuthenticationController authenticationController=Get.put(AuthenticationController(AuthenticationService(Dio())));
@@ -37,14 +36,14 @@ class VideosListWidget extends StatelessWidget{
                           child: Lottie.asset('assets/lotties/video_loader.json'),
                         );
                       }
-                      VideoModel videoModel=controller.videosList[index];
+                      VideoModel? videoModel=controller.videosList[index];
                       return AnimateList(index:index,widget:InkWell(
                         onTap: (){
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      LandingPage(id: videoModel.id,)));
+                                      LandingPage(id: videoModel!.id,)));
 
                         },
                         child: Container(
@@ -53,7 +52,7 @@ class VideosListWidget extends StatelessWidget{
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
-                                videoModel.thumbnail==null ?
+                                videoModel!.thumbnail=="" ?
                                 Container(
                                   padding:const EdgeInsets.all(10.0),
                                   width: MediaQuery.of(context).size.width,
@@ -131,7 +130,7 @@ class VideosListWidget extends StatelessWidget{
                                               "assets/images/author_image.jpg"),
                                         )
                                       ),
-                                      Text(videoModel.authorName!=null ?videoModel.authorName:"Author Name",style: TextStyle(color: Colors.black,fontSize: 12.0),),
+                                      Text(videoModel.authorName!="" ?videoModel.authorName:"Author Name",style: TextStyle(color: Colors.black,fontSize: 12.0),),
                                       Expanded(child: SizedBox()),
                                       Text("242 Views",style: TextStyle(color: Colors.grey,fontSize: 12.0),),
                                     ],

@@ -20,7 +20,7 @@ class HomePageState extends State<HomePage> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         VideoListController controller = Get.find();
-        if (controller.nextUrl != null) controller.getNextVideosList();
+        if (controller.nextUrl != "") controller.getNextVideosList();
       }
     });
     super.initState();
@@ -60,7 +60,7 @@ class HomePageState extends State<HomePage> {
                     children: [
                       InkWell(
                         onTap: () async {
-                          authenticationController.userProfileModel != null
+                          authenticationController.userProfileModel.id != 0
                               ? Navigator.push(
                               context, MaterialPageRoute(
                               builder: (context) =>
@@ -150,7 +150,7 @@ class HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          CategoryListWidget(),
+          CategoryListWidget(scrollController: _scrollController),
               VideosListWidget(scrollController: _scrollController,)
         ])),
       ),

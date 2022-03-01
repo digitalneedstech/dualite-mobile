@@ -7,10 +7,7 @@ import 'package:dualites/shared/widgets/da_raised_button_widget/da_raised_button
 import 'package:dualites/shared/widgets/image_widget/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:helpers/helpers.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
-import 'package:share/share.dart';
-import 'package:video_editor/utils/controller.dart';
 import 'package:video_editor/video_editor.dart';
 class VideosPost extends StatefulWidget{
   VideosPostState createState()=>VideosPostState();
@@ -19,13 +16,13 @@ class VideosPostState extends State<VideosPost>{
   List<String> typeOfVideos=["DUALITE","PILL"];
   String selectedVal="DUALITE";
   List<String> newTags=[];
-  File imageFile;
+  File? imageFile;
   String categoriesList="";
   List<TagModel> tags=[];
   String category="";
   TextEditingController _tagController=TextEditingController(text: "");
-  VideoEditorController videoEditorController1;
-  VideoEditorController videoEditorController2;
+  VideoEditorController? videoEditorController1;
+  VideoEditorController? videoEditorController2;
   final GalleryController galleryController=Get.find();
   bool isFirstVideoExporting=false;
   bool isSecondVideoExporting=false;
@@ -37,17 +34,19 @@ class VideosPostState extends State<VideosPost>{
   }
 
   initializeControllerAndFile()async{
-    File file=await galleryController.selectedAssets[0].file;
-    File file2=await galleryController.selectedAssets[1].file;
-    videoEditorController1 = VideoEditorController.file(file);
-    videoEditorController2=VideoEditorController.file(file2);
-    await videoEditorController1.initialize();
-    await videoEditorController2.initialize();
-    setState(() {
-      /*if(videoEditorController1.video.value.duration<=Duration(seconds: 30,minutes: 1,milliseconds: 100000)){
+    File? file=await galleryController.selectedAssets[0].file;
+    File? file2=await galleryController.selectedAssets[1].file;
+    if(file!=null && file2!=null) {
+      videoEditorController1 = VideoEditorController.file(file);
+      videoEditorController2 = VideoEditorController.file(file2);
+      await videoEditorController1!.initialize();
+      await videoEditorController2!.initialize();
+      setState(() {
+        /*if(videoEditorController1.video.value.duration<=Duration(seconds: 30,minutes: 1,milliseconds: 100000)){
         canBeLoaded=true;
       }*/
-    });
+      });
+    }
 
   }
   @override
@@ -57,29 +56,6 @@ class VideosPostState extends State<VideosPost>{
         PostVideoSuccessState state= galleryController.state as PostVideoSuccessState;
         //galleryController.createDeepLink(state.video_id);
         //Get.snackbar("Saving..", "Please wait.", backgroundColor: Colors.green,colorText: Colors.white);
-      }
-      if(galleryController.state is VideoDeepLinkCreationSuccessState){
-        VideoDeepLinkCreationSuccessState state =galleryController.state;
-        showDialog(context: context,
-            barrierDismissible: true,
-            builder: (context){
-              return AlertDialog(
-                title: Center(child: Text("Share Link"),),
-                content: Container(
-                  height: MediaQuery.of(context).size.height*0.2,
-                  width: MediaQuery.of(context).size.width*0.8,
-                  child: Center(
-                    child: Text(state.deepLinkUrl),
-                  ),
-                ),
-                actions: [
-                  OutlineButton(onPressed: ()=>Navigator.pop(context),child: Center(child: Text("Cancel"),),),
-                  RaisedButton(onPressed: (){
-                    Share.share(state.deepLinkUrl);
-                  },child: Center(child: Text("Share"),),)
-                ],
-              );
-            });
       }
       if(galleryController.state is PostVideoErrorState){
 
@@ -101,10 +77,10 @@ class VideosPostState extends State<VideosPost>{
                   child: InkWell(
                     onTap: () {
                       galleryController.typeController.text=selectedVal;
-                        if(imageFile!=null && imageFile.path.trim()!="")
-                          galleryController.postVideoContent(imageFile,categoriesList,context);
+                        if(imageFile!=null && imageFile!.path.trim()!="")
+                          galleryController.postVideoContent(imageFile!,categoriesList,context);
                         else
-                          galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please Add a thumbnail Image")));
+                          galleryController.scaffoldKey.currentState!.showSnackBar(SnackBar(content: Text("Please Add a thumbnail Image")));
 
 
                     },
@@ -126,7 +102,7 @@ class VideosPostState extends State<VideosPost>{
                     child: Column(
                       children: [
                         ImageUploadWidget(
-                          file:imageFile,
+                          file:imageFile!,
                           callback: (file) {
                             setState(() {
                               imageFile = file;
@@ -193,9 +169,9 @@ class VideosPostState extends State<VideosPost>{
                         ),
                         DropdownButton(isExpanded: true,items: typeOfVideos.map((e){
                           return DropdownMenuItem(child: Text(e),value: e,);
-                        }).toList(), onChanged: (String val){
+                        }).toList(), onChanged: (String? val){
                           setState(() {
-                            selectedVal=val;
+                            selectedVal=val!;
                           });
                         },value: selectedVal,),/*
                         CategorySelection(tags: tags,callback: (List<String> categories){
@@ -217,83 +193,11 @@ class VideosPostState extends State<VideosPost>{
     }
     );
   }
-
-  Future<void> _exportVideo(VideoEditorController controller,int index) async {
-    if(index==1 && isFirstVideoExporting==true){
-      galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("First Video export has to complete first")));
-
-    }else if(index==0 && isSecondVideoExporting==true){
-      galleryController.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Second Video export has to complete first")));
-    }
-    else {
-      setState(() {
-        if (index == 0) {
-          isFirstVideoExporting = true;
-        }
-        else {
-          isSecondVideoExporting = true;
-        }
-      });
-      File file = await controller.exportVideo(
-          name: "video_$index"
-      );
-      setState(() {
-        if (index == 0)
-          isFirstVideoExporting = false;
-        else
-          isSecondVideoExporting = false;
-      });
-      galleryController.resizedFiles[index]=file;
-    }
-  }
-
-  String formatter(Duration duration) => [
-    duration.inMinutes.remainder(60).toString().padLeft(2, '0'),
-    duration.inSeconds.remainder(60).toString().padLeft(2, '0')
-  ].join(":");
-  List<Widget> _trimSlider(VideoEditorController controller,int index,Function callback) {
-    return [
-      AnimatedBuilder(
-        animation: controller.video,
-        builder: (_, __) {
-          final duration = controller.video.value.duration.inSeconds;
-          final pos = controller.trimPosition * duration;
-          final start = controller.minTrim * duration;
-          final end = controller.maxTrim * duration;
-          callback(controller);
-          return Padding(
-            padding: Margin.horizontal(MediaQuery.of(context).size.height / 4),
-            child: Row(children: [
-              TextDesigned(formatter(Duration(seconds: pos.toInt())),color: Colors.black,),
-              Expanded(child: SizedBox()),
-              OpacityTransition(
-                visible: controller.isTrimming,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  TextDesigned(formatter(Duration(seconds: start.toInt())),color: Colors.black,),
-                  SizedBox(width: 10),
-                  TextDesigned(formatter(Duration(seconds: end.toInt()))),
-                ]),
-              )
-            ]),
-          );
-        },
-      ),
-      Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height*0.1,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        child: TrimSlider(
-          controller: controller,
-          height: MediaQuery.of(context).size.height*0.1,
-        ),
-      )
-    ];
-  }
 }
 class CategorySelection extends StatefulWidget{
   List<TagModel> tags;
   final Function callback;
-  CategorySelection({this.tags,this.callback});
+  CategorySelection({required this.tags,required this.callback});
   CategorySelectionState createState()=>CategorySelectionState();
 }
 class CategorySelectionState extends State<CategorySelection>{
@@ -302,7 +206,7 @@ class CategorySelectionState extends State<CategorySelection>{
   @override
   Widget build(BuildContext context) {
     return MultiSelectFormField(
-      autovalidate: false,
+      autovalidate: AutovalidateMode.disabled,
       chipBackGroundColor: Colors.red,
       chipLabelStyle: TextStyle(fontWeight: FontWeight.bold),
       dialogTextStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -315,7 +219,7 @@ class CategorySelectionState extends State<CategorySelection>{
         style: TextStyle(fontSize: 16),
       ),
       dataSource: categoryListController.categoryList.map((e){
-        return TagModel(display: e.tag,value: e.tag).toJson();
+        return TagModel(display: e!.tag,value: e.tag).toJson();
       }).toList(),
       textField: 'display',
       fillColor: Colors.blue,
@@ -337,7 +241,7 @@ class CategorySelectionState extends State<CategorySelection>{
 
 class TagModel{
   String display,value;
-  TagModel({this.value,this.display});
+  TagModel({required this.value,required this.display});
   toJson(){
     return {
       "display":display,

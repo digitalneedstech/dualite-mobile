@@ -1,4 +1,3 @@
-import 'package:dualites/models/user_model.dart';
 
 class UserProfileModel{
   int id,followingCount,followersCount,user,videosCount;
@@ -6,8 +5,18 @@ class UserProfileModel{
   updated,coverOne,coverTwo;
   bool isCreator;
   List<dynamic> videos,followers,following;
-  UserProfileModel({this.id,this.user,this.username,this.email,this.videos,this.videosCount,this.followingCount,
-  this.followers,this.following,this.followersCount,this.name,this.avatar,this.bio,this.isCreator,this.coverOne,this.coverTwo,this.updated});
+  UserProfileModel({this.id=0,
+    this.user=0,
+    this.username="",
+    this.email="",this.videos=const <dynamic>[],
+    this.videosCount=0,
+    this.followingCount=0,
+  this.followers=const <dynamic>[],
+    this.following=const <dynamic>[],
+    this.followersCount=0,
+    this.name="",
+    this.avatar="",this.bio="",this.isCreator=false,
+    this.coverOne="",this.coverTwo="",this.updated=""});
 
   factory UserProfileModel.fromMap(Map<String,dynamic> json){
     return new UserProfileModel(

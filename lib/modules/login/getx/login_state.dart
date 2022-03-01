@@ -14,14 +14,14 @@ class RegisteredState extends LoginState {
 
 class LoggedInState extends LoginState {
   final UserProfileModel userProfileModel;
-  LoggedInState({this.userProfileModel});
+  LoggedInState({required this.userProfileModel});
   @override
   List<Object> get props => [];
 }
 
 class FollowedProfileState extends LoginState {
   bool isFollowed;
-  FollowedProfileState({this.isFollowed});
+  FollowedProfileState({required this.isFollowed});
   @override
   List<Object> get props => [];
 }
@@ -32,7 +32,7 @@ class RegisterLoading extends LoginState {}
 class LoginFailure extends LoginState {
   final String error;
 
-  LoginFailure({@required this.error});
+  LoginFailure({required this.error});
 
   @override
   List<Object> get props => [error];
@@ -41,7 +41,7 @@ class LoginFailure extends LoginState {
 class RegistrationFailure extends LoginState {
   final String error;
 
-  RegistrationFailure({@required this.error});
+  RegistrationFailure({required this.error});
 
   @override
   List<Object> get props => [error];

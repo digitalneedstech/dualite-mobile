@@ -10,7 +10,7 @@ import 'package:lottie/lottie.dart';
 import './widgets/liked_widget.dart';
 class LandingPage extends StatelessWidget {
   int id;
-  LandingPage({this.id});
+  LandingPage({required this.id});
   final VideoListController videoListController = Get.find();
   final AuthenticationController authenticationController=Get.find();
   @override
@@ -36,7 +36,7 @@ class LandingPage extends StatelessWidget {
                 ),
               ),
               children: [
-                videoListController.videoModel.thumbnail==null ?
+                videoListController.videoModel.thumbnail=="" ?
                 GestureDetector(
                   onTap: (){
                     Navigator.push(
@@ -135,7 +135,7 @@ class LandingPage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          videoListController.videoModel.authorAvatar != null
+                          videoListController.videoModel.authorAvatar != ""
                               ? CircleAvatar(
                                   backgroundImage: NetworkImage(
                                       videoListController
@@ -145,7 +145,7 @@ class LandingPage extends StatelessWidget {
                                   backgroundImage: AssetImage(
                                       "assets/images/author_image.jpg"),
                                 ),
-                          videoListController.videoModel.authorName != null
+                          videoListController.videoModel.authorName !=""
                               ? Text(
                                   videoListController.videoModel.authorName,
                                   style: TextStyle(
@@ -186,7 +186,7 @@ class LandingPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                          authenticationController.userProfileModel!=null ?Recommendations():Center(
+                          authenticationController.userProfileModel.id!=0 ?Recommendations():Center(
                             child: Text("Please Login to see Recommendations List"),
                           )
                     ]))

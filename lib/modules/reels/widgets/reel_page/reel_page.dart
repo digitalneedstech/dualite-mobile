@@ -8,7 +8,7 @@ import 'package:video_player/video_player.dart';
 class ReelsSwitchPlayer extends StatefulWidget {
   VideoModel videoModel;
   VideoPlayerController videoPlayerController1,videoPlayerController2;
-  ReelsSwitchPlayer({this.videoModel,this.videoPlayerController1,this.videoPlayerController2});
+  ReelsSwitchPlayer({required this.videoModel,required this.videoPlayerController1,required this.videoPlayerController2});
   ReelsSwitchPlayerState createState()=>ReelsSwitchPlayerState();
 }
 
@@ -23,13 +23,9 @@ class ReelsSwitchPlayerState extends State<ReelsSwitchPlayer> with SingleTickerP
   Duration _currentDuration=Duration(seconds: 0);
 
   bool isPaused=false;
-  Widget iconWidget;
 
   @override
   Widget build(BuildContext context){
-    iconWidget=IconButton(icon: Icon(Icons.pause), onPressed: (){
-      widget.videoPlayerController1.pause();
-    },color: Colors.white,);
     return Scaffold(
         body: LoadingOverlay(
             isLoading: false,

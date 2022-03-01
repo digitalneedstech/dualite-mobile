@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 class AuthenticationController extends GetxController {
   final AuthenticationService _authenticationService;
   final _authenticationStateStream = AuthenticationState().obs;
-  UserProfileModel userProfileModel;
+  UserProfileModel userProfileModel=UserProfileModel();
   AuthenticationState get state => _authenticationStateStream.value;
 
   AuthenticationController(this._authenticationService);
@@ -79,7 +79,7 @@ class AuthenticationController extends GetxController {
 
     final user = await _authenticationService.getCurrentUser();
     userProfileModel = user;
-    if (user == null) {
+    if (user.id == 0) {
       _authenticationStateStream.value = UnAuthenticated();
     } else {
       _authenticationStateStream.value = Authenticated(user: userProfileModel);
