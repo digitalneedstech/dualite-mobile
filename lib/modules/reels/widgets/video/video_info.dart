@@ -24,17 +24,20 @@ class VideoInfoState extends State<VideoInfo>{
             if (widget.callback != null) {
               widget.callback!();
             }
-          }, child: Container(
+          }, child: AspectRatio(
+      aspectRatio: widget.videoPlayerController.value.aspectRatio,
+            child: Container(
         width: MediaQuery
-            .of(context)
-            .size
-            .width,
+              .of(context)
+              .size
+              .width,
         height: MediaQuery
-            .of(context)
-            .size
-            .height,
+              .of(context)
+              .size
+              .height,
         child: VideoPlayer(widget.videoPlayerController),
-      ));
+      ),
+          ));
 
   }
 }

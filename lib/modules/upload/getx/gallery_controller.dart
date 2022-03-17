@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dualites/modules/home/widgets/models/video_content_model.dart';
 import 'package:dualites/modules/home/widgets/models/video_model.dart';
 import 'package:dualites/modules/upload/getx/gallery_provider.dart';
 import 'package:dualites/modules/upload/getx/gallery_state.dart';
@@ -14,13 +15,13 @@ class GalleryController extends GetxController {
   List<AssetEntity> galleryAssets = [];
   List<AssetEntity> selectedAssets = [];
   Map<int, File> resizedFiles = {};
-  RxBool isNextButtonEnabled=false.obs;
+  RxBool isNextButtonEnabled = false.obs;
   late VideoEditorController controller1;
   late VideoEditorController controller2;
-  RxInt videoLength1=0.obs;
-  RxInt videoLength2=0.obs;
+  RxInt videoLength1 = 0.obs;
+  RxInt videoLength2 = 0.obs;
   Rx<File> selectedAssetEntity = File("").obs;
-  String errorMessage="";
+  String errorMessage = "";
   bool isLoading = true;
   GalleryProvider galleryProvider;
 
@@ -62,9 +63,8 @@ class GalleryController extends GetxController {
           description: 'And Earn cash',
         ),
         navigationInfoParameters:
-        NavigationInfoParameters(forcedRedirectEnabled: false));
-    final ShortDynamicLink dynamicUrl =
-    await parameters.buildShortLink();
+            NavigationInfoParameters(forcedRedirectEnabled: false));
+    final ShortDynamicLink dynamicUrl = await parameters.buildShortLink();
     return dynamicUrl.shortUrl.toString();
     /*_postVideoStream.value =
         VideoDeepLinkCreationSuccessState(deepLinkUrl: dynamicUrl.toString());
@@ -78,8 +78,7 @@ class GalleryController extends GetxController {
     galleryAssets = await galleryProvider.loadGalleryAssets();
     if (galleryAssets.isNotEmpty) {
       galleryAssets.first.file.then((value) {
-        if(value!=null)
-          selectedAssetEntity.value = value;
+        if (value != null) selectedAssetEntity.value = value;
       });
     } else {
       errorMessage = "No Videos Found";
@@ -91,16 +90,15 @@ class GalleryController extends GetxController {
 
   updateSelectedAssetEntity(AssetEntity assetEntity) {
     assetEntity.file.then((value) {
-      if(value!=null)
-        selectedAssetEntity.value = value;
+      if (value != null) selectedAssetEntity.value = value;
     });
   }
 
   initVideo(File file) async {
     _controller = VideoPlayerController.file(file)
-    // Play the video again when it ends
+      // Play the video again when it ends
       ..setLooping(true)
-    // initialize the controller and notify UI when done
+      // initialize the controller and notify UI when done
       ..initialize().then((_) {});
   }
 
@@ -117,11 +115,10 @@ class GalleryController extends GetxController {
           selectedAssets.add(assetEntity);
         }
         if (selectedAssets.length == 2) {
-          for(var i=0;i<selectedAssets.length-1;i++){
-            if(selectedAssets[i].videoDuration.inSeconds!=
-                selectedAssets[i+1].videoDuration.inSeconds) {
-              Navigator.push(
-                  context,
+          for (var i = 0; i < selectedAssets.length - 1; i++) {
+            if (selectedAssets[i].videoDuration.inSeconds !=
+                selectedAssets[i + 1].videoDuration.inSeconds) {
+              Navigator.push(context,
                   MaterialPageRoute(builder: (context) => VideosPost()));
             }
           }
@@ -132,8 +129,8 @@ class GalleryController extends GetxController {
     });
   }
 
-  postVideoContent(File thumbnailImage, String tags,
-      BuildContext context) async {
+  postVideoContent(
+      File thumbnailImage, String tags, BuildContext context) async {
     if (formKey.currentState!.validate()) {
       _postVideoStream.value = PostVideoLoadingState();
       Get.snackbar("Saving..", "Please wait.",
@@ -141,37 +138,55 @@ class GalleryController extends GetxController {
           backgroundColor: Colors.green,
           colorText: Colors.white);
       List<File> files = [];
+      List<VideoContentModel> videoContentModel = [];
       if (resizedFiles.values.length == 2) {
         files = resizedFiles.values.toList();
       } else {
         for (AssetEntity entity in selectedAssets) {
           File? file = await entity.file;
-          if(file!=null)
-            files.add(file);
+          if (file != null) files.add(file);
         }
-        Map<bool, String> mediaId = await galleryProvider.postThumbnailFile(
-            "https://dualite.xyz/api/v1/uploads/", thumbnailImage);
-        if (mediaId[true]!=null) {
-          String? message=mediaId[true];
-          dynamic response;
-          if(message!=null) {
-             response= await galleryProvider.postVideoContent(
-                "https://dualite.xyz/api/v1/videos/",
-                titleController.text,
-                descriptionController.text,
-                typeController.text,
-                tags,
-                message);
-          }
-          if (response is VideoModel) {
-            String firstUrl = (response as VideoModel).contentOne;
-            String secondUrl = (response as VideoModel).contentTwo;
+        dynamic responseFromFirstApi =
+            await galleryProvider.postVideoContentRequest1(
+                "https://dualite.xyz/api/v1/videos/content/");
+        dynamic responseFromSecondApi =
+            await galleryProvider.postVideoContentRequest1(
+                "https://dualite.xyz/api/v1/videos/content/");
+        if (responseFromFirstApi is VideoContentModel && responseFromSecondApi is VideoContentModel) {
+
+          Map<bool, String> mediaId = await galleryProvider.postThumbnailFile(
+              "https://dualite.xyz/api/v1/uploads/", thumbnailImage);
+          if (mediaId[true] != null) {
+            String? message = mediaId[true];
+            dynamic response;
+            VideoContentModel videoContentModel1 =
+                responseFromFirstApi as VideoContentModel;
+            VideoContentModel videoContentModel2 =
+                responseFromSecondApi as VideoContentModel;
+            if (message != null) {
+              response = await galleryProvider.postVideoContentRequest2(
+                  "https://dualite.xyz/api/v1/videos/",
+                  titleController.text,
+                  descriptionController.text,
+                  typeController.text,
+                  tags,
+                  message,
+                  videoContentModel1.id,
+                  videoContentModel2.id);
+            }
             if (response is VideoModel) {
+              VideoContentModel? firstVideoContent =
+                  (response).contentOne;
+              VideoContentModel? secondVideoContent =
+                  (response).contentTwo;
               var count = 0;
               for (var i = 0; i < 2; i++) {
-                dynamic fileUploadResponse = await galleryProvider
-                    .postVideoFiles(
-                    i == 0 ? firstUrl : secondUrl, files[i]);
+                dynamic fileUploadResponse =
+                    await galleryProvider.postVideoFiles(
+                        i == 0
+                            ? firstVideoContent!.stream_url
+                            : secondVideoContent!.stream_url,
+                        files[i]);
                 if (fileUploadResponse is String) {
                   Get.snackbar("Error", (fileUploadResponse),
                       backgroundColor: Colors.red, colorText: Colors.white);
@@ -198,30 +213,43 @@ class GalleryController extends GetxController {
                       ),
                     ),
                     actions: [
-                      OutlineButton(onPressed: () => Navigator.pop(context),
-                        child: Center(child: Text("Cancel"),),),
-                      RaisedButton(onPressed: () {
-                        /*
+                      OutlineButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Center(
+                          child: Text("Cancel"),
+                        ),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          /*
                         TODO-
                         Share.share(deepLink);*/
-                      }, child: Center(child: Text("Share"),),)
-                    ]
-                );
+                        },
+                        child: Center(
+                          child: Text("Share"),
+                        ),
+                      )
+                    ]);
               }
+            } else {
+              Get.snackbar("Error", (response),
+                  backgroundColor: Colors.red, colorText: Colors.white);
+              _postVideoStream.value = PostVideoErrorState(message: response);
             }
           } else {
-            Get.snackbar("Error", (response),
-                backgroundColor: Colors.red, colorText: Colors.white);
-            _postVideoStream.value = PostVideoErrorState(message: response);
+            String? message = mediaId[false];
+            if (message != null) {
+              Get.snackbar("Error", (message),
+                  backgroundColor: Colors.red, colorText: Colors.white);
+              _postVideoStream.value = PostVideoErrorState(message: message);
+            }
           }
-        } else {
-          String? message = mediaId[false];
-          if (message != null) {
-            Get.snackbar("Error", (message),
-                backgroundColor: Colors.red, colorText: Colors.white);
-            _postVideoStream.value =
-                PostVideoErrorState(message:message);
-          }
+        }
+        else{
+          Get.snackbar("Error", (responseFromFirstApi),
+              backgroundColor: Colors.red, colorText: Colors.white);
+          _postVideoStream.value =
+              PostVideoErrorState(message: responseFromFirstApi);
         }
       }
     }

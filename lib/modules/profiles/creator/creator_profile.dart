@@ -60,10 +60,11 @@ class CreatorProfilePage extends StatelessWidget {
                                 InkWell(
                                   onTap: () async {
                                     // ### Add the next 2 lines ###
-                                    final permitted =
-                                        await PhotoManager.requestPermission();
-                                    if (!permitted) return;
-                                    // ######
+                                    final PermissionState _ps = await PhotoManager.requestPermissionExtend();
+                                    // Further requests can be only procceed with authorized or limited.
+                                    if (_ps != PermissionState.authorized && _ps != PermissionState.limited) {
+                                      return;
+                                    }
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (_) =>
@@ -178,7 +179,7 @@ class CreatorProfilePage extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.01,
                 color: Color(0xFF00AEEF),
               ),
-              Expanded(child: VideosList())
+              //Expanded(child: VideosList())
             ],
           ),
         ),

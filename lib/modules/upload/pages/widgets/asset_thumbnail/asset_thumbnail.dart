@@ -14,10 +14,19 @@ class AssetThumbnail extends StatelessWidget {
   final GalleryController galleryController=Get.find();
   @override
   Widget build(BuildContext context) {
+    ThumbnailOption(size: ThumbnailSize.square(200));
     // We're using a FutureBuilder since thumbData is a future
-    return FutureBuilder<Uint8List?>(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      child: AssetEntityImage(
+        asset,
+        isOriginal: false,
+        fit: BoxFit.cover,
+      )
+    );/*
+    return FutureBuilder<AssetEntity?>(
       initialData: null,
-      future: asset.thumbData,
+      future: asset!,
       builder: (_, snapshot) {
         final bytes = snapshot.data;
         // If we have no data, display a spinner
@@ -28,7 +37,7 @@ class AssetThumbnail extends StatelessWidget {
           bytes: bytes
         );
       },
-    );
+    );*/
   }
 }
 

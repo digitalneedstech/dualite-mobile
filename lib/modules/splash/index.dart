@@ -25,7 +25,7 @@ class SplashPageState extends State<SplashPage> {
           AuthenticationController(new AuthenticationService(Dio())));
       SharedPreferences preferences=await SharedPreferences.getInstance();
       String? key=preferences.getString("key");
-      /*if(key!=null){
+      if(key!=null){
         final dynamic response =
         await authenticationController.getUserProfile(key);
         if (response is UserProfileModel) {
@@ -40,7 +40,7 @@ class SplashPageState extends State<SplashPage> {
 
         }
       }else {
-        */Navigator.pushReplacement(
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) =>
@@ -48,7 +48,7 @@ class SplashPageState extends State<SplashPage> {
                       userProfileModel: new UserProfileModel(isCreator: false),
                       index: 0,
                     )));
-      //}
+      }
     });
   }
 

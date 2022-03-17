@@ -9,6 +9,7 @@
     <application
         android:usesCleartextTraffic="true"
         android:label="Dualites"
+        android:requestLegacyExternalStorage="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

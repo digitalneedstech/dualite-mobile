@@ -106,13 +106,13 @@ class ReelsModel extends GetxController {
     if (videosList.length > index && index >= 0) {
       /// Create new controller
       final VideoPlayerController _controller =
-          VideoPlayerController.network(videosList[index]!.contentOne,videoPlayerOptions: VideoPlayerOptions(
+          VideoPlayerController.network(videosList[index]!.contentOne!.stream_url,videoPlayerOptions: VideoPlayerOptions(
               mixWithOthers: true
           ));
 
 
       final VideoPlayerController _controller2 =
-      VideoPlayerController.network(videosList[index]!.contentTwo,videoPlayerOptions: VideoPlayerOptions(
+      VideoPlayerController.network(videosList[index]!.contentTwo!.stream_url,videoPlayerOptions: VideoPlayerOptions(
     mixWithOthers: true
     ));
       _controller.initialize().then((value){

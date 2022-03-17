@@ -34,9 +34,9 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
   }
 
   _initializePlayer(){
-    _videoPlayerController1 = widget.videoModel.contentOne == null ?
+    _videoPlayerController1 = widget.videoModel.contentOne!.stream_url == null ?
     VideoPlayerController.asset("assets/vod.mp4") :
-    VideoPlayerController.network(widget.videoModel.contentOne,videoPlayerOptions: VideoPlayerOptions(
+    VideoPlayerController.network(widget.videoModel.contentOne!.stream_url,videoPlayerOptions: VideoPlayerOptions(
         mixWithOthers: true
     ));
 
@@ -49,9 +49,9 @@ class SwitchVideoPlayerState extends State<SwitchVideoPlayer> with SingleTickerP
         videosErrorMessage = "First Video is either not available or blank.";
       }
       else{
-        _videoPlayerController2 = widget.videoModel.contentTwo == "" ?
+        _videoPlayerController2 = widget.videoModel.contentTwo!.stream_url == "" ?
         VideoPlayerController.asset("assets/vod.mp4") :
-        VideoPlayerController.network(widget.videoModel.contentTwo,
+        VideoPlayerController.network(widget.videoModel.contentTwo!.stream_url,
             videoPlayerOptions: VideoPlayerOptions(
               mixWithOthers: true,
             ));
