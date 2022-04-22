@@ -1,16 +1,17 @@
-# dualites
 
-A new Flutter application.
+# Project Title
 
-## Getting Started
+Dualite is a streaming platform where content creators can upload their videos and do live streaming also. Now Speciality of the app is that Videos run in pair and in parallel and one in foreground and one in background. And if you pause one, both will be paused and play one then both will play. 
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- Live Video Streaming with MUX
+- Video playback with multiple videos playing on scroll
+- Video playback for playing and pausing two videos running in parallel
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## Authors
+
+- [@Digitaleeds](https://www.github.com/octokatherine)
+
